@@ -16,8 +16,20 @@ const trainerAppliedTraining = new mongoose.Schema({
     trainerDesignation: {
         type: String
     },
-    trainerRating: {
-        type: Array,
+    trainerExpertIn:{
+        type:String
+    },
+    trainerExperience:{
+        type:String
+    },
+    trainerAge:{
+        type:Number
+    },
+    trainerTraining:{
+        type:Number
+    },
+    trainerSince:{
+        type:String
     },
     trainingDetails: [
         {
@@ -25,13 +37,16 @@ const trainerAppliedTraining = new mongoose.Schema({
                 type: Object
             },
             trainerAvailableDate1: {
-                type: String
+                type: String,
+                default: ''
             },
             trainerAvailableDate2: {
-                type: String
+                type: String,
+                default:''
             },
             trainerAvailableDate3: {
-                type: String
+                type: String,
+                default:''
             },
             trainerModeOfTraining: {
                 type: String

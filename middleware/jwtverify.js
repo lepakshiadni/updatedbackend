@@ -8,6 +8,7 @@ const jwtverify = async (req, resp, next) => {
     const { authorization } = req.headers 
     // console.log('heades',req.headers)
     const token = authorization?.split(" ")[1]
+    // console.log(token)
     if (token) {
         try {
             const decoded = jwt.verify(token, process.env.JWT_TOKEN)

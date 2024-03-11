@@ -58,8 +58,6 @@ const trainerCreatePost = async (req, resp) => {
 const addTrainerPostComments = async (req, resp) => {
     const { comment } = req.body
     const { postId } = req.params
-    console.log(postId)
-    console.log(comment)
 
     try {
         const findTrainerPost = await trainerCreatePostSchema.findById(postId);
@@ -70,7 +68,7 @@ const addTrainerPostComments = async (req, resp) => {
         // console.log(findTrainingPost)
         findTrainerPost.comments.push(comment);
         await findTrainerPost.save();
-        console.log(findTrainerPost.comments)
+
         resp.status(201).json({ success: true, message: 'Comment Added', comments: findTrainerPost?.comments })
     }
     catch (error) {
@@ -79,34 +77,46 @@ const addTrainerPostComments = async (req, resp) => {
     }
 
 }
+// add like  on posts
 const addLikeToTrainerPost = async (req, resp) => {
-    const { likedBy } = req.body
-    const { postId } = req.params
-    console.log(likedBy)
+    const { likedBy } = req.body;
+    const { postId } = req.params;
+
+    console.log(postId, likedBy);
 
     try {
-        const findTrainerPost = await trainerCreatePostSchema.findById(postId);
+        const findTrainingPost = await trainerCreatePostSchema.findById(postId);
 
-        if (!findTrainerPost) {
-            return resp.status(404).json({ success: false, message: " No Post Found" })
+        if (!findTrainingPost) {
+            return resp.status(404).json({ success: false, message: "No Post Found" });
         }
-        findTrainerPost.likes.push(likedBy)
-        await findTrainerPost.save();
-        resp.status(201).json({ success: true, message: 'Likes Added', likes: findTrainerPost?.likes })
-    }
-    catch (error) {
-        console.log(error)
-        resp.status(500).json({ sucess: false, message: "Server Error" })
-    }
 
-}
+        // Check if likedBy already exists in the likes array
+        const existingLikeIndex = findTrainingPost.likes.findIndex(like => like._id.toString() === likedBy);
+
+        if (existingLikeIndex === -1) {
+            // Add like if it doesn't exist
+            findTrainingPost.likes.push({ _id: likedBy }); // Assuming likedBy is an ObjectId
+            await findTrainingPost.save();
+            resp.status(201).json({ success: true, message: 'Like Added', postTrainingDetails: findTrainingPost });
+        } else {
+            // Remove like if it already exists
+            findTrainingPost.likes.splice(existingLikeIndex, 1);
+            await findTrainingPost.save();
+            resp.status(201).json({ success: true, message: 'Like Removed', postTrainingDetails: findTrainingPost });
+        }
+    } catch (error) {
+        console.log(error);
+        resp.status(500).json({ success: false, message: "Server Error" });
+    }
+};
 
 // get the post training comments 
 
 const getTrainierPostComments = async (req, res) => {
     const { postId } = req.params
     const findTrainerPostComments = await trainerCreatePostSchema.findOne({ _id: postId })
-    // console.log(findPostTrainingComments.comments)
+
     try {
         if (!findTrainerPostComments) {
             return res.status(404).json({ success: false, msg: "No Comments found" });
@@ -123,8 +133,8 @@ const getTrainierPostComments = async (req, res) => {
 
 }
 
-const getpostTrainercreatePostById = async(req,resp) => {
-    const {postId}=req.params
+const getpostTrainercreatePostById = async (req, resp) => {
+    const { postId } = req.params
     try {
         const trainercreatePost = await trainerCreatePostSchema.findById(postId)
         if (!trainercreatePost) {
@@ -143,10 +153,10 @@ const getpostTrainerPost = async (req, resp) => {
     try {
         const trainercreatePost = await trainerCreatePostSchema.find().sort({ createdAt: -1 });
         if (trainercreatePost.length == 0) {
-            resp.status(404).json({ success: false, message: "No Post Found" })
+            resp.status(200).json({ success: false, message: "No Post Found" })
         }
         else {
-            resp.status(200).json({ success: true, message: 'Post Fected', trainercreatePost })
+            resp.status(201).json({ success: true, message: 'Post Fected', trainercreatePost })
         }
     }
     catch (error) {

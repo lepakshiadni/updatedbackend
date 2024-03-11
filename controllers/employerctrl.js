@@ -2,6 +2,7 @@
 const employerSchema = require("../models/employermodel.js");
 const { generateToken } = require("../config/jwttoken.js");
 const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmodel.js');
+const bookmarkedEmployerSchema=require('../models/bookmarkedEmployerPostmodel.js')
 
 
 const aws = require("aws-sdk");
@@ -33,7 +34,7 @@ const testProfileApi = async (req, resp) => {
 };
 
 const employerSignUp = async (req, resp) => {
-    const { fullName, experience, skills, primaryNumber, role } = req.body;
+    const { fullName, companyName, designation, primaryNumber, role } = req.body;
 
     console.log(req.body, role);
 
@@ -42,8 +43,8 @@ const employerSignUp = async (req, resp) => {
         try {
             const employerDetails = new employerSchema({
                 fullName: fullName,
-                experience: experience,
-                skills: skills,
+                companyName: companyName,
+                designation: designation,
                 role: role,
                 contactInfo: {
                     primaryNumber: primaryNumber,
@@ -256,6 +257,7 @@ const getemployerProfile = async (req, resp) => {
     }
 };
 
+
 //for employer portal 
 const getAppliedTrainingEmployer = async (req, resp) => {
     const { _id } = req.user
@@ -281,6 +283,112 @@ const getAppliedTrainingEmployer = async (req, resp) => {
 }
 
 
+const updateProfileVisibility = async (req, res) => {
+    const { _id } = req.user;
+    const { profileVisibility } = req.body;
+    
+    // try {
+    //     const updatedProfile = await Employer.findByIdAndUpdate(
+    //         _id,
+    //         { $set: { 'basicInfo.visibility': profileVisibility } },
+    //         { new: true }
+    //     );
+
+    //     if (!updatedProfile) {
+    //         return res.status(404).json({ success: false, message: 'Employer profile not found' });
+    //     }
+
+    //     return res.status(200).json({ success: true, message: 'Profile visibility updated successfully', updatedProfile });
+    // } catch (error) {
+    //     console.error('Error updating profile visibility:', error);
+    //     return res.status(500).json({ success: false, message: 'Internal server error' });
+    // }
+};
+const updateContactVisibility = async (req, res) => {
+    const { _id } = req.user;
+    const { profileVisibility } = req.body;
+
+    try {
+        const updatedProfile = await Employer.findByIdAndUpdate(
+            _id,
+            { $set: { 'basicInfo.visibility': profileVisibility } },
+            { new: true }
+        );
+
+        if (!updatedProfile) {
+            return res.status(404).json({ success: false, message: 'Employer profile not found' });
+        }
+
+        return res.status(200).json({ success: true, message: 'Profile visibility updated successfully', updatedProfile });
+    } catch (error) {
+        console.error('Error updating profile visibility:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+
+const addBookMarkedPost = async (req, res) => {
+    try {
+        const { _id } = req.user;
+        const postDetails = req.body; // Assuming _id is the field identifying the post
+        // Check if the current user already has a bookmarked document
+        let userBookmarks = await bookmarkedEmployerSchema.findOne({ userId: _id });
+
+        if (!userBookmarks) {
+            // If the current user doesn't exist, create a new document
+            userBookmarks = new bookmarkedEmployerSchema({
+                userId: _id,
+                postDetails: [postDetails]
+            });
+            await userBookmarks.save();
+            return res.status(201).json({ success: true, message: 'Post Bookmarked Successfully', userBookmarks });
+        }
+
+        // Check if the post is already bookmarked
+        const existingPostIndex = userBookmarks.postDetails.findIndex(detail => detail._id === postDetails._id);
+
+        if (existingPostIndex !== -1) {
+            // If the post is already bookmarked, delete its details
+            userBookmarks.postDetails.splice(existingPostIndex, 1);
+            await userBookmarks.save();
+            return res.status(200).json({ success: true, message: 'Post Unbookmarked Successfully', userBookmarks });
+        }
+        else {
+            // If the user exists and the post is not already bookmarked, add the new postDetails
+            userBookmarks.postDetails.push(postDetails);
+            await userBookmarks.save();
+        }
+
+        // Return a success response
+        return res.status(201).json({ success: true, message: 'Post Bookmarked Successfully', userBookmarks });
+
+    } catch (error) {
+        console.error(error);
+        // Return an error response if an error occurs
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
+
+const getBookMarkedPostsByUserId = async (req, resp) => {
+    const { _id } = req.user;
+
+    try {
+        const findBookMarkedPost = await bookmarkedEmployerSchema.findOne({ userId: _id })
+
+        if (!findBookMarkedPost) {
+            resp.status(200).json({ success: false, message: "No Data Found" })
+        }
+        else {
+            resp.status(201).json({ success: true, userBookmarks: findBookMarkedPost })
+        }
+    }
+    catch (error) {
+        console.log(error)
+    }
+};
+
+
 
 
 
@@ -296,6 +404,9 @@ module.exports = {
     employerExperienceInfoUpdate,
     employerExperienceInfoDelete,
     getAppliedTrainingEmployer,
+    updateProfileVisibility,
+    addBookMarkedPost,
+    getBookMarkedPostsByUserId
 
 
 };

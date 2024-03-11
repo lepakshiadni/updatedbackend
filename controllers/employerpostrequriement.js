@@ -173,8 +173,13 @@ const getTrainingRequirementComments = async (req, res) => {
 }
 
 const getpostTrainingRequirement = async (req, resp) => {
+    const {_id}=req.user
+    // console.log(req.user)
     try {
-        const postTrainingDetails = await postTrainingRequirementSchema.find().sort({ createdAt: -1 });
+        const postTrainingDetails = await postTrainingRequirementSchema.find({postedById:_id})
+        .sort({ createdAt: -1 });
+
+        console.log(postTrainingDetails)
         if (postTrainingDetails.length == 0) {
             resp.status(404).json({ success: false, message: "No Training Requirements  Found" })
         }
@@ -183,7 +188,7 @@ const getpostTrainingRequirement = async (req, resp) => {
         }
     }
     catch (error) {
-        resp.status(500).json({ success: false, message: 'Server Error' });
+        resp.status(500).json({ success: false, message: 'Server Error' ,error});
     }
 }
 
@@ -232,7 +237,23 @@ const getpostJobRequirement = async (req, resp) => {
     }
 }
 
+const getAllPostTrainingRequirement=async(req,resp)=>{
+    try {
+        const postTrainingDetails = await postTrainingRequirementSchema.find()
+        .sort({ createdAt: -1 });
 
+        console.log(postTrainingDetails)
+        if (postTrainingDetails.length == 0) {
+            resp.status(404).json({ success: false, message: "No Training Requirements  Found" })
+        }
+        else {
+            resp.status(200).json({ success: true, message: 'Post TrainingRequirements Fected', postTrainingDetails })
+        }
+    }
+    catch (error) {
+        resp.status(500).json({ success: false, message: 'Server Error' ,error});
+    }
+}
 
 module.exports = {
     postTrainingRequirement,
@@ -242,5 +263,6 @@ module.exports = {
     postTrainingRequirementComments,
     getTrainingRequirementComments,
     addLikeToTrainingPost,
-    deletePostRequirement
+    deletePostRequirement,
+    getAllPostTrainingRequirement
 }

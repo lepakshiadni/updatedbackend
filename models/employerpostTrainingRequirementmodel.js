@@ -110,5 +110,6 @@ const employerPostRequriementSchema = new mongoose.Schema({
     { timestamps: true }
 );
 
+employerPostRequriementSchema.indexes({postedById: 1});
 
 module.exports = mongoose.model('EmployerPostRequirement', employerPostRequriementSchema);

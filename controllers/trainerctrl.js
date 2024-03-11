@@ -313,59 +313,61 @@ const gettrainerProfile = async (req, resp) => {
 
 
 
-const addBookMarkedPost = async (req, resp) => {
-    const { _id } = req.user
-    const { postId } = req.params;
-    const postDetails = req.body;
-    console.log(postDetails)
-    // console.log(req.user)
-
+const addBookMarkedPost = async (req, res) => {
     try {
-        // Check if the post is already bookmarked by the user
-        // let isExist = await bookMarkedTrainingPostSchema.findOne({ postId: postId });
-        // console.log('isexist', isExist);
+        const { _id } = req.user;
+        const postDetails = req.body; // Assuming _id is the field identifying the post
 
-
-        // If the post is not bookmarked, add it to the user's bookmarked posts
-
-        // Check if the user already has bookmarked posts
+        // Check if the current user already has a bookmarked document
         let userBookmarks = await bookMarkedTrainingPostSchema.findOne({ userId: _id });
 
-        if (userBookmarks) {
-            // If the user already has bookmarked posts, add the new bookmark to the existing list
-            userBookmarks.bookMarkedTrainingPost.push({ postId: postId, postDetails: postDetails });
-            await userBookmarks.save();
-        } else {
-            // If the user doesn't have any bookmarked posts yet, create a new document for the user
+        if (!userBookmarks) {
+            // If the current user doesn't exist, create a new document
             userBookmarks = new bookMarkedTrainingPostSchema({
                 userId: _id,
-                bookMarkedTrainingPost: [{ postId: postId, postDetails: postDetails }]
+                postDetails: [postDetails]
             });
             await userBookmarks.save();
-            return resp.status(200).json({ success: true, message: 'Post Bookmarked Successfully' });
+            return res.status(201).json({ success: true, message: 'Post Bookmarked Successfully', userBookmarks });
+        }
+
+        // Check if the post is already bookmarked
+        const existingPostIndex = userBookmarks.postDetails.findIndex(detail => detail._id === postDetails._id);
+
+        if (existingPostIndex !== -1) {
+            // If the post is already bookmarked, delete its details
+            userBookmarks.postDetails.splice(existingPostIndex, 1);
+            await userBookmarks.save();
+            return res.status(200).json({ success: true, message: 'Post Unbookmarked Successfully', userBookmarks });
+        }
+        else {
+            // If the user exists and the post is not already bookmarked, add the new postDetails
+            userBookmarks.postDetails.push(postDetails);
+            await userBookmarks.save();
         }
 
         // Return a success response
+        return res.status(201).json({ success: true, message: 'Post Bookmarked Successfully', userBookmarks });
 
     } catch (error) {
         console.error(error);
         // Return an error response if an error occurs
-        return resp.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
 
 
 const getBookMarkedPostsByUserId = async (req, resp) => {
-    const userId = req.user._id;
-    const { postId } = req.params
+    const { _id } = req.user;
+
     try {
-        const findBookMarkedPost = await bookMarkedTrainingPostSchema.find()
-        // console.log('Find Book Marked Post', findBookMarkedPost)
+        const findBookMarkedPost = await bookMarkedTrainingPostSchema.findOne({ userId: _id })
+
         if (!findBookMarkedPost) {
-            resp.status(404).json({ success: false, message: "No Data Found" })
+            resp.status(200).json({ success: false, message: "No Data Found" })
         }
         else {
-            resp.status(200).json({ success: true, bookmarkedPosts: findBookMarkedPost })
+            resp.status(201).json({ success: true, userBookmarks: findBookMarkedPost })
         }
     }
     catch (error) {
@@ -385,32 +387,36 @@ const trainerAppliedTraining = async (req, resp) => {
         const ctrainerAvailableDate2 = new Date(trainingDetails.trainerAvailableDate2)
         const ctrainerAvailableDate3 = new Date(trainingDetails.trainerAvailableDate3)
 
-        const onlyDate1 = ctrainerAvailableDate1.toISOString().substr(0, 10)
-        const onlyDate2 = ctrainerAvailableDate2.toISOString().substr(0, 10)
-        const onlyDate3 = ctrainerAvailableDate3.toISOString().substr(0, 10)
+        const onlyDate1 = ctrainerAvailableDate1.toISOString().slice(0, 10)
+        const onlyDate2 = ctrainerAvailableDate2.toISOString().slice(0, 10)
+        const onlyDate3 = ctrainerAvailableDate3.toISOString().slice(0, 10)
 
         // Check if the trainer has already applied for this training
         const existingApplication = await trainerAppliedTrainingSchema.findOne({
             trainerId: _id,
             'trainingDetails.trainingPostDetails._id': trainingPostId,
         });
+
         if (existingApplication) {
             console.log('Already applied');
             return resp.status(200).json({ success: false, message: 'Already Applied' });
-        } else {
+        } 
+        else {
             const findApplication = await trainerAppliedTrainingSchema.findOne({ "trainerId": _id });
             // console.log("findApplication", findApplication)
             if (findApplication) {
                 findApplication.trainingDetails.push(trainingDetails);
                 await findApplication.save();
                 // console.log(findApplication)
-            } else {
+                return resp.status(201).json({ success: true, message: 'Application Applied' })
+            }
+            else {
                 const newApplication = new trainerAppliedTrainingSchema({
                     trainerId: _id,
                     trainerProfileImg: req?.user?.basicInfo?.profileImg || "",
                     trainerName: req?.user?.basicInfo?.firstName || "",
                     trainerDesignation: req?.user?.basicInfo?.designation || "",
-                    trainerRating: req?.user?.rating?.map((value) => value) || [],
+                    // trainerRating: req?.user?.rating?.map((value) => value) || [],
                     trainingDetails: [
                         {
                             trainingPostDetails: trainingDetails?.trainingPostDetails,
@@ -423,7 +429,7 @@ const trainerAppliedTraining = async (req, resp) => {
                 await newApplication.save();
                 // console.log(newApplication)
             }
-            resp.status(200).json({ success: true, message: "Training application submitted successfully." });
+            return resp.status(201).json({ success: true, message: "Training application submitted successfully." });
         }
     } catch (error) {
         console.error(error);
@@ -437,7 +443,7 @@ const getAppliedTraining = async (req, resp) => {
     try {
 
         const findAppliedTraining = await trainerAppliedTrainingSchema.findOne({ "trainerId": _id }).populate('trainingDetails.trainingPostDetails')
-        const trainingPostData = findAppliedTraining.trainingDetails.map(({ trainingPostDetails, appliedStatus, applicationstatus, _id }) => {
+        const trainingPostData = findAppliedTraining.trainingDetails.map(({ trainingPostDetails, appliedStatus, applicationstatus, _id, trainingResources, feedBackDetails }) => {
             // Destructure the `tocFile` key from `trainingPostDetails`
             // const { tocFile, ...updatedTrainingPostDetails } = trainingPostDetails;
             // Return the updated `trainingPostDetails` object without the `tocFile` key
@@ -446,6 +452,8 @@ const getAppliedTraining = async (req, resp) => {
                 appliedStatus,
                 applicationstatus,
                 _id,
+                trainingResources,
+                feedBackDetails
             };
         });
         resp.status(201).json({ success: true, message: ' Data is fetching', trainingPostData });
@@ -461,15 +469,9 @@ const addTrainingResources = async (req, resp) => {
 
     const { _id } = req.user
     const { trainingDetailsId } = req.params
-
-    // const { fileName,fileOriginalName } = req.body
     const fileData = req.files['fileData']
     const fileNameArray = Array.isArray(req.body.fileName) ? req.body.fileName : [req.body.fileName]
     const fileOriginalNameArray = Array.isArray(req.body.fileOriginalName) ? req.body.fileOriginalName : [req.body.fileOriginalName]
-
-    // console.log('req.files',req.files['fileData'])
-    // console.log('fileName',req.body)
-    // console.log('fileData', fileData)
     try {
         const uploadResources = []
         if (req.files['fileData']) {
@@ -553,6 +555,7 @@ const deleteAppliedTraining = async (req, resp) => {
 
 // get all training details 
 const getAllTrainerDetails = async (req, resp) => {
+    console.log('req.query', req.query)
     const trainerDetails = await trainerSchema.find()
     if (trainerDetails) {
         resp.status(201).json({ success: true, message: 'TrainerDataFected', trainerDetails })
@@ -564,28 +567,29 @@ const getAllTrainerDetails = async (req, resp) => {
 
 //get trainerDetail by using the Id 
 
+
 const getTrainerDetailsById = async (req, resp) => {
     const { id } = req.params
     try {
-        const trainerDetails = await trainerSchema.findOne({ _id:id })
-        if(!trainerDetails){
-            resp.status(200).json({success:false ,message:"No User Found"})
+        const trainerDetails = await trainerSchema.findOne({ _id: id })
+        if (!trainerDetails) {
+            resp.status(200).json({ success: false, message: "No User Found" })
         }
-        else{
-            resp.status(201).json({success:true,message:'Trainer Details Fetched',trainerDetails})
+        else {
+            resp.status(201).json({ success: true, message: 'Trainer Details Fetched', trainerDetails })
         }
 
-    } 
-    catch(error){
-        resp.status(200).json({success:false,message: "Server Error",error})
-    }   
+    }
+    catch (error) {
+        resp.status(200).json({ success: false, message: "Server Error", error })
+    }
 
 }
 
 module.exports = {
     trainerSignUp, gettrainerProfile, trainerBasicInfoUpdate,
     trainerSkillsUpdate, trainerCertificateUpdate, trainerContactInfoUpdate,
-    trainerExperienceInfoUpdate, trainerCertificateDelete,getTrainerDetailsById,
+    trainerExperienceInfoUpdate, trainerCertificateDelete, getTrainerDetailsById,
     addBookMarkedPost, getBookMarkedPostsByUserId,
     trainerAppliedTraining, getAppliedTraining, deleteAppliedTraining, addTrainingResources,
     testProfileApi,

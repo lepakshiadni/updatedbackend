@@ -7,6 +7,8 @@ const {
     getAllTrainerDetails
 } = require('../controllers/trainerctrl')
 
+const {updateRequestStatus,getAllRequestTrainer}=require('../controllers/employerTrainingRequestctrl')
+
 const { jwtverify } = require('../middleware/jwtverify')
 const multer = require('multer')
 
@@ -32,5 +34,12 @@ route.get('/getBookMarkedPostsByUserId', jwtverify, getBookMarkedPostsByUserId)
 route.get('/getAppliedTraining', jwtverify, getAppliedTraining)
 route.post('/testProfileApi', upload.single('file'), testProfileApi)
 route.get('/getAllTrainerDetails',getAllTrainerDetails)
+
+
+route.get('/getAllRequestTrainer',jwtverify,getAllRequestTrainer);
+
+
+
+
 
 module.exports = route

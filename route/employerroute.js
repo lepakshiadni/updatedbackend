@@ -3,7 +3,7 @@ const route = require('express').Router()
 //employer Details route 
 const {
     employerSignUp, getemployerProfile, employerBasicInfoUpdate, employerSkillsUpdate, employerContactInfoUpdate, employerExperienceInfoUpdate,
-    getAppliedTrainingEmployer, employerExperienceInfoDelete
+    getAppliedTrainingEmployer, employerExperienceInfoDelete,updateProfileVisibility, addBookMarkedPost, getBookMarkedPostsByUserId,
 } = require('../controllers/employerctrl')
 
 // trainer training routes
@@ -11,7 +11,10 @@ const {
     getAllAppliedTraining, updateAppliedStatus,addFeedback
 } = require('../controllers/trainerappliedctrl')
 
-// feedback route 
+const {
+    employerTrainingRequest,
+    getEmployerApplicationRequest
+}=require('../controllers/employerTrainingRequestctrl')
 
 
 
@@ -32,7 +35,7 @@ route.put('/employerContactInfoUpdate', jwtverify, employerContactInfoUpdate)
 route.put('/employerExperienceInfoUpdate', jwtverify, employerExperienceInfoUpdate)
 route.get('/getemployerProfile', jwtverify, getemployerProfile) // to view the profile of the user who is logged in
 route.get('/getAppliedTrainingEmployer', jwtverify, getAppliedTrainingEmployer)
-
+route.put('/updateProfileVisibility',jwtverify,updateProfileVisibility)
 route.get('/getTrainerDetailsById/:id', getTrainerDetailsById)
 route.delete('/employerExperienceInfoUpdate/:_id', jwtverify, employerExperienceInfoDelete)
 
@@ -43,6 +46,11 @@ route.get('/getAllAppliedTraining', jwtverify, getAllAppliedTraining)
 
 route.put('/addFeedback/:trainingDetailsId',jwtverify,addFeedback)
 
+route.post('/addBookMarkePost/:postId', jwtverify, addBookMarkedPost)   // to bookmark a post by employer
+route.get('/getBookMarkedPostsByUserId', jwtverify, getBookMarkedPostsByUserId)
+
+route.post('/employerTrainingRequest',jwtverify,employerTrainingRequest)
+route.get('/getEmployerApplicationRequest',jwtverify,getEmployerApplicationRequest)
 
 
 

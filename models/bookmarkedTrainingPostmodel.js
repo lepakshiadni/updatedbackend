@@ -1,22 +1,15 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const bookMarkedTrainingPost = new mongoose.Schema({
-    useId: {
+const bookMarkedTrainingPostSchema = new mongoose.Schema({
+    userId: {
         type: String,
-    },  // the id of the user who has bookmark
-    bookMarkedTrainingPost: [
+        required: true
+    },
+    postDetails: [
         {
-            postId:{
-                type:String,
-
-            },
-            postDetails:{
-                type:Object
-            }
+            type: Object
         }
     ]
-    
-})
+});
 
-
-module.exports = mongoose.model('bookMarkedTrainingPost', bookMarkedTrainingPost)
+module.exports = mongoose.model('bookMarkedTrainingPost', bookMarkedTrainingPostSchema);

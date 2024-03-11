@@ -64,6 +64,10 @@ function getLocalIpAddress() {
     return 'localhost'; // Default to localhost if no suitable address is found
 }
 
+
+
+ 
+
 const localIp = getLocalIpAddress();
 console.log(localIp)
 
