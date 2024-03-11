@@ -79,7 +79,7 @@ app.get("/localip",(req,resp)=>{
         resp.json({message:'error in ip'})
     }
 })
-app.get("/", (req, res)=>{
+app.get("/work", (req, res)=>{
     res.send("<h1>working</h1>")
 })
 const PORT = process.env.PORT || 8080
