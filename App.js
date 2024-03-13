@@ -83,6 +83,6 @@ app.get("/work", (req, res)=>{
     res.send("<h1>working</h1>")
 })
 const PORT = process.env.PORT || 8080
-const server = app.listen(PORT,44.211.80.23, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
