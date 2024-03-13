@@ -22,63 +22,15 @@ jobs:
         cache: 'npm'
  
     - run: npm ci
-      env:
-        PORT: ${{ secrets.PORT }}
-        DB: ${{ secrets.DB }}
-        JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
-        OTP_AUTHID: ${{ secrets.OTP_AUTHID }}
-        OTP_TOKEN: ${{ secrets.OTP_TOKEN }}
-        S3_ACCESSKEY_KEY: ${{ secrets.S3_ACCESSKEY_KEY }}
-        S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-        S3_BUCKET_REGION: ${{ secrets.S3_BUCKET_REGION }}
-        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
- 
     - run: |
         touch .env
         echo "${{ secrets.DB }}" >> .env
-      env:
-        PORT: ${{ secrets.PORT }}
-        JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
-        OTP_AUTHID: ${{ secrets.OTP_AUTHID }}
-        OTP_TOKEN: ${{ secrets.OTP_TOKEN }}
-        S3_ACCESSKEY_KEY: ${{ secrets.S3_ACCESSKEY_KEY }}
-        S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-        S3_BUCKET_REGION: ${{ secrets.S3_BUCKET_REGION }}
-        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
- 
-    - run: npm run build --if-present
-      env:
-        PORT: ${{ secrets.PORT }}
-        DB: ${{ secrets.DB }}
-        JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
-        OTP_AUTHID: ${{ secrets.OTP_AUTHID }}
-        OTP_TOKEN: ${{ secrets.OTP_TOKEN }}
-        S3_ACCESSKEY_KEY: ${{ secrets.S3_ACCESSKEY_KEY }}
-        S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-        S3_BUCKET_REGION: ${{ secrets.S3_BUCKET_REGION }}
-        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
- 
-    - run: |
-        touch .env
-        echo "${{ secrets.DB }}" >> .env
-      env:
-        PORT: ${{ secrets.PORT }}
-        JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
-        OTP_AUTHID: ${{ secrets.OTP_AUTHID }}
-        OTP_TOKEN: ${{ secrets.OTP_TOKEN }}
-        S3_ACCESSKEY_KEY: ${{ secrets.S3_ACCESSKEY_KEY }}
-        S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-        S3_BUCKET_REGION: ${{ secrets.S3_BUCKET_REGION }}
-        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
- 
+        echo “${{secrets.PORT}}” >> .env
+        echo “${{secrets.JWT_TOKEN}}” >> .env
+        echo “${{secrets.OTP_AUTHID}}” >> .env
+        echo “${{secrets.OTP_TOKEN}}” >> .env
+        echo “${{secrets.S3_ACCESSKEY_KEY}}” >> .env
+        echo “${{secrets.S3_SECRET_KEY}}” >> .env
+        echo “${{secrets.S3_BUCKET_REGION}}” >> .env
+        echo “${{secrets.S3_BUCKET_NAME}}” >> .env
     - run: pm2 restart backend
-      env:
-        PORT: ${{ secrets.PORT }}
-        DB: ${{ secrets.DB }}
-        JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
-        OTP_AUTHID: ${{ secrets.OTP_AUTHID }}
-        OTP_TOKEN: ${{ secrets.OTP_TOKEN }}
-        S3_ACCESSKEY_KEY: ${{ secrets.S3_ACCESSKEY_KEY }}
-        S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-        S3_BUCKET_REGION: ${{ secrets.S3_BUCKET_REGION }}
-        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
