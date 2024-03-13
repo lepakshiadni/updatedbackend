@@ -79,9 +79,6 @@ app.get("/localip",(req,resp)=>{
         resp.json({message:'error in ip'})
     }
 })
-app.get("/work", (req, res)=>{
-    res.send("<h1>working</h1>")
-})
 const PORT = process.env.PORT || 8080
 const server = app.listen(PORT,localIp, () => {
     console.log(`server is running in the ${PORT}`)

@@ -33,7 +33,7 @@ const newConversation = async (req, resp) => {
         });
 
         if (existingConversation) {
-            return resp.status(400).json({
+            return resp.status(200).json({
                 success: false,
                 message: 'Conversation already exists between the users.',
                 existingConversation: existingConversation,
@@ -49,7 +49,7 @@ const newConversation = async (req, resp) => {
         });
 
         await newconversation.save();
-        resp.status(200).json({ success: true, newconversation });
+        resp.status(201).json({ success: true, newconversation });
     } catch (err) {
         console.error("Error creating conversation:", err);
         resp.status(500).json({ success: false, error: err.message });

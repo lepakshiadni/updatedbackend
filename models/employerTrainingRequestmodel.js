@@ -31,7 +31,7 @@ const employerTrainingRequest = new mongoose.Schema({
             },
             applicationstatus: {
                 type: String,
-                default: 'Pending'
+                default: 'Requested'
             }
         }
     ]

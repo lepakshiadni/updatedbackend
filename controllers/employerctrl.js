@@ -3,6 +3,7 @@ const employerSchema = require("../models/employermodel.js");
 const { generateToken } = require("../config/jwttoken.js");
 const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmodel.js');
 const bookmarkedEmployerSchema=require('../models/bookmarkedEmployerPostmodel.js')
+const SkillSchema=require('../models/skillmodel.js')
 
 
 const aws = require("aws-sdk");
@@ -147,6 +148,7 @@ const employerSkillsUpdate = async (req, resp) => {
                 skills: req.body?.map((skill) => skill)
             })
             await employerDetails.save()
+            console.log(employerDetails);
             resp.status(201).json({ success: true, message: 'skill updated', employerDetails });
         }
         else {
@@ -242,6 +244,22 @@ const employerExperienceInfoDelete = async (req, resp) => {
     }
 };
 
+const getSkills = async (req, resp) => {
+    try {
+        const skills = await SkillSchema.find()
+ 
+        if (!skills) {
+            resp.status(200).json({ success: false, message: "No Data Found" })
+ 
+        } else {
+            resp.status(201).json({ success: true, message: 'getting skills', skills })
+        }
+    } catch (error) {
+        console.log(error)
+ 
+    }
+}
+
 const getemployerProfile = async (req, resp) => {
     const employerDetails = await req.user;
     // console.log("User details", employerDetails)
@@ -256,6 +274,7 @@ const getemployerProfile = async (req, resp) => {
             });
     }
 };
+
 
 
 //for employer portal 
@@ -355,7 +374,7 @@ const addBookMarkedPost = async (req, res) => {
         }
         else {
             // If the user exists and the post is not already bookmarked, add the new postDetails
-            userBookmarks.postDetails.push(postDetails);
+            userBookmarks.postDetails.unshift(postDetails);
             await userBookmarks.save();
         }
 
@@ -403,10 +422,9 @@ module.exports = {
     employerContactInfoUpdate,
     employerExperienceInfoUpdate,
     employerExperienceInfoDelete,
+    getSkills,
     getAppliedTrainingEmployer,
     updateProfileVisibility,
     addBookMarkedPost,
     getBookMarkedPostsByUserId
-
-
 };

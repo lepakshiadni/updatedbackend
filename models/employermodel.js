@@ -67,7 +67,13 @@ const employerSchema = new mongoose.Schema(
         },
         skills: [
             {
-                type: String
+                name: {
+                    type: String,
+                    required: true
+                },
+                image: {
+                    type: String,
+                }
             }
         ],
 

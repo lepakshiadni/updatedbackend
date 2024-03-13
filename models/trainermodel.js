@@ -12,7 +12,13 @@ const trainerSchema = new mongoose.Schema(
         },
         skills: [
             {
-                type: Object
+                name: {
+                    type: String,
+                    required: true
+                },
+                image: {
+                    type: String,
+                }
             }
         ],
         role: {
@@ -192,23 +198,23 @@ const trainerSchema = new mongoose.Schema(
                 value: Number,  // from 1 to 5
             }
         ],
-        notification:{
+        notification: {
 
-            messages:{
-                type:Boolean,
-                default:false
-            },
-            updateProfile:{
-                type:Boolean,
-                default:false
-            },
-            newsAndreports:{
-                type:Boolean,
+            messages: {
+                type: Boolean,
                 default: false
             },
-            proposals:{
+            updateProfile: {
                 type: Boolean,
-                default:false
+                default: false
+            },
+            newsAndreports: {
+                type: Boolean,
+                default: false
+            },
+            proposals: {
+                type: Boolean,
+                default: false
             }
 
         }

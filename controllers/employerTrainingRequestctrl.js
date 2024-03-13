@@ -11,10 +11,11 @@ const employerTrainingRequest = async (req, resp) => {
         const { trainingDetails } = req.body
         // console.log(trainingDetails)
         // console.log(trainer)
+        console.log(_id)
 
 
         const existingApplication = await employerTrainingRequestSchema.findOne({
-            trainerId: trainer._id,
+            // trainerId: trainer._id,
             employerId: _id,
             'trainingDetails.trainingPostDetails._id': trainingDetails?.trainingPostDetails?._id
         })
@@ -28,7 +29,7 @@ const employerTrainingRequest = async (req, resp) => {
             return resp.status(200).json({ success: false, message: 'Trainer already Applied Accept the Training' })
         }
         else {
-            const findRequest = await employerTrainingRequestSchema.findOne({ trainerId: trainer?._id });
+            const findRequest = await employerTrainingRequestSchema.findOne({ trainerId: trainer?._id,employerId: _id, });
             if (findRequest) {
                 // console.log(trainingDetails)
                 findRequest.trainingDetails.push(trainingDetails);
@@ -69,8 +70,9 @@ const getEmployerApplicationRequest = async (req, resp) => {
     const { _id } = req.user
 
     try {
-
-        const findAppliedTraining = await employerTrainingRequestSchema.find({ employerId: _id }).populate('trainingDetails.trainingPostDetails')
+const findAppliedTraining = await employerTrainingRequestSchema.find({ employerId: _id })
+// .populate('trainingDetails.trainingPostDetails')
+        
         // const trainingPostData = findAppliedTraining.trainingDetails.map(({ trainingPostDetails, appliedStatus, applicationstatus, _id, trainingResources, feedBackDetails }) => {
         //     // Destructure the `tocFile` key from `trainingPostDetails`
         //     // const { tocFile, ...updatedTrainingPostDetails } = trainingPostDetails;
@@ -120,10 +122,27 @@ const getAllRequestTrainer = async (req, resp) => {
     }
 
 }
+
+
 //for trainer 
 
+// after this update add the training to the trainer Schema applied
+
+function addTrainingData (trainingDetails) {
+    // return new Promise((resolve, reject) => {
+    //     TrainerSchema.findOne({_id : trainingDetails._trainerId},  
+    //         {$push: {"applied": trainingDetails}}, {new: true})
+    //         .then(data=>{
+    //             resolve(data);
+    //         }).catch(err => {reject("Error in adding data")});
+    // })
+
+
+}
+
 const updateRequestStatus = async (req, resp) => {
-    const { employerId, trainingDetailsId, status } = req.body;
+    const { employerId, trainingDetailsId,trainingDetails, status } = req.body;
+    const {_id}=req.body
 
     try {
         const updatedTraining = await employerTrainingRequestSchema.findOneAndUpdate(
@@ -139,12 +158,16 @@ const updateRequestStatus = async (req, resp) => {
             },
             { new: true }
         );
-
+            console.log(updatedTraining,"updated Training");
         await updatedTraining.save()
-        console.log(updatedTraining);
+        // console.log(updatedTraining);
+
 
         if (updatedTraining) {
-            resp.status(201).json({ success: true, message: 'Applied status updated successfully', updatedTraining });
+            const getAllRequestTraining=await employerTrainingRequestSchema.find({ employerId: _id })
+            if(getAllRequestTraining){
+                resp.status(201).json({ success: true, message: 'Applied status updated successfully', getAllRequestTraining });
+            }
         } else {
             resp.status(200).json({ success: false, message: 'Trainer training details not found' });
         }

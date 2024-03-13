@@ -2,7 +2,7 @@ const route = require('express').Router()
 
 //employer Details route 
 const {
-    employerSignUp, getemployerProfile, employerBasicInfoUpdate, employerSkillsUpdate, employerContactInfoUpdate, employerExperienceInfoUpdate,
+    employerSignUp, getemployerProfile, employerBasicInfoUpdate, employerSkillsUpdate, employerContactInfoUpdate, employerExperienceInfoUpdate,getSkills,
     getAppliedTrainingEmployer, employerExperienceInfoDelete,updateProfileVisibility, addBookMarkedPost, getBookMarkedPostsByUserId,
 } = require('../controllers/employerctrl')
 
@@ -38,7 +38,7 @@ route.get('/getAppliedTrainingEmployer', jwtverify, getAppliedTrainingEmployer)
 route.put('/updateProfileVisibility',jwtverify,updateProfileVisibility)
 route.get('/getTrainerDetailsById/:id', getTrainerDetailsById)
 route.delete('/employerExperienceInfoUpdate/:_id', jwtverify, employerExperienceInfoDelete)
-
+route.get('/skills',jwtverify, getSkills)
 
 
 route.put('/updateAppliedStatus', jwtverify, updateAppliedStatus)   // update applied status of training from employer side

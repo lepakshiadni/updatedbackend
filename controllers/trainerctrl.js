@@ -3,6 +3,7 @@ const trainerSchema = require('../models/trainermodel');
 const bookMarkedTrainingPostSchema = require('../models/bookmarkedTrainingPostmodel.js');
 const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmodel.js');
 const trainerCreatePostSchema = require('../models/trainerCreatePostmodel.js')
+const SkillSchema=require('../models/skillmodel.js')
 const { generateToken } = require('../config/jwttoken.js')
 const { generateS3UploadParams } = require('../utils/uploads3.js')
 require('dotenv').config()
@@ -299,6 +300,22 @@ const trainerCertificateDelete = async (req, resp) => {
     }
 };
 
+const getSkills = async (req, resp) => {
+    try {
+        const skills = await SkillSchema.find()
+ 
+        if (!skills) {
+            resp.status(200).json({ success: false, message: "No Data Found" })
+ 
+        } else {
+            resp.status(201).json({ success: true, message: 'getting skills', skills })
+        }
+    } catch (error) {
+        console.log(error)
+ 
+    }
+}
+
 
 const gettrainerProfile = async (req, resp) => {
     const trainerDetails = await req.user
@@ -342,7 +359,7 @@ const addBookMarkedPost = async (req, res) => {
         }
         else {
             // If the user exists and the post is not already bookmarked, add the new postDetails
-            userBookmarks.postDetails.push(postDetails);
+            userBookmarks.postDetails.unshift(postDetails);
             await userBookmarks.save();
         }
 
@@ -589,7 +606,7 @@ const getTrainerDetailsById = async (req, resp) => {
 module.exports = {
     trainerSignUp, gettrainerProfile, trainerBasicInfoUpdate,
     trainerSkillsUpdate, trainerCertificateUpdate, trainerContactInfoUpdate,
-    trainerExperienceInfoUpdate, trainerCertificateDelete, getTrainerDetailsById,
+    trainerExperienceInfoUpdate, trainerCertificateDelete, getTrainerDetailsById,getSkills,
     addBookMarkedPost, getBookMarkedPostsByUserId,
     trainerAppliedTraining, getAppliedTraining, deleteAppliedTraining, addTrainingResources,
     testProfileApi,

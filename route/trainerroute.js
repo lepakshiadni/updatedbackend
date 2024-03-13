@@ -1,7 +1,7 @@
 const route = require('express').Router()
 const {
     trainerSignUp, gettrainerProfile,trainerBasicInfoUpdate,trainerSkillsUpdate,trainerCertificateUpdate,trainerContactInfoUpdate,trainerExperienceInfoUpdate,
-    addBookMarkedPost,getBookMarkedPostsByUserId,trainerCertificateDelete,getTrainerDetailsById,
+    addBookMarkedPost,getBookMarkedPostsByUserId,trainerCertificateDelete,getTrainerDetailsById,getSkills,
     trainerAppliedTraining,getAppliedTraining,deleteAppliedTraining,addTrainingResources,
     testProfileApi,
     getAllTrainerDetails
@@ -25,6 +25,7 @@ route.put('/trainerExperienceInfoUpdate',jwtverify,trainerExperienceInfoUpdate)
 route.get('/gettrainerProfile', jwtverify, gettrainerProfile) // to view the profile of the user who is logged in
 route.get('/getTrainerDetailsById/:id', getTrainerDetailsById)   // get the trainer details by id
 route.delete('/trainerCertificateDelete',jwtverify,trainerCertificateDelete) // to delete the ceriticate 
+route.get('/skills',jwtverify, getSkills)
 
 route.post('/addBookMarkePost/:postId', jwtverify, addBookMarkedPost)   // to bookmark a post by trainer
 route.post('/trainerAppliedTraining/:trainingPostId', jwtverify, trainerAppliedTraining)
@@ -37,6 +38,7 @@ route.get('/getAllTrainerDetails',getAllTrainerDetails)
 
 
 route.get('/getAllRequestTrainer',jwtverify,getAllRequestTrainer);
+route.put('/updateRequestStatus',jwtverify,updateRequestStatus)
 
 
 

@@ -78,8 +78,6 @@ const postTrainingRequirement = async (req, resp) => {
 const postTrainingRequirementComments = async (req, resp) => {
     const { comment } = req.body
     const { postId } = req.params
-    console.log(postId)
-    console.log(comment)
 
     try {
         const findTrainingPost = await postTrainingRequirementSchema.findById(postId);
@@ -90,8 +88,9 @@ const postTrainingRequirementComments = async (req, resp) => {
         // console.log(findTrainingPost)
         findTrainingPost.comments.push(comment);
         await findTrainingPost.save();
-        console.log(findTrainingPost.comments)
-        resp.status(201).json({ success: true, message: 'Comment Added', comments: findTrainingPost?.comments })
+
+        const postTrainingDetails = await postTrainingRequirementSchema.find().sort({ createdAt: -1 });
+        resp.status(201).json({ success: true, message: 'Comment Added', postTrainingDetails })
     }
     catch (error) {
         console.log(error)
@@ -102,26 +101,41 @@ const postTrainingRequirementComments = async (req, resp) => {
 
 //add like  on posts
 const addLikeToTrainingPost = async (req, resp) => {
-    const { likedBy } = req.body
-    const { postId } = req.params
-    console.log(likedBy)
+    const { likedBy } = req.body;
+    const { postId } = req.params;
 
     try {
         const findTrainingPost = await postTrainingRequirementSchema.findById(postId);
 
         if (!findTrainingPost) {
-            return resp.status(200).json({ sucess: false, message: " No Post Found" })
+            return resp.status(404).json({ success: false, message: "No Post Found" });
         }
-        findTrainingPost.likes.push(likedBy)
-        await findTrainingPost.save();
-        resp.status(201).json({ success: true, message: 'Likes Added', likes: findTrainingPost?.likes })
-    }
-    catch (error) {
-        console.log(error)
-        resp.status(500).json({ sucess: false, message: "Server Error" })
-    }
 
-}
+        // Check if likedBy already exists in the likes array
+        const existingLikeIndex = findTrainingPost.likes.findIndex(like => like._id.toString() === likedBy);
+
+        if (existingLikeIndex === -1) {
+            // Add like if it doesn't exist
+            findTrainingPost.likes.push({ _id: likedBy }); // Assuming likedBy is an ObjectId
+            await findTrainingPost.save();
+
+            const postTrainingDetails = await postTrainingRequirementSchema.find().sort({ createdAt: -1 });
+
+            resp.status(201).json({ success: true, message: 'Like Added', postTrainingDetails });
+        } else {
+            // Remove like if it already exists
+            findTrainingPost.likes.splice(existingLikeIndex, 1);
+            await findTrainingPost.save();
+            const postTrainingDetails = await postTrainingRequirementSchema.find().sort({ createdAt: -1 });
+
+            resp.status(201).json({ success: true, message: 'Like Removed', postTrainingDetails });
+        }
+    } catch (error) {
+        console.log(error);
+        resp.status(500).json({ success: false, message: "Server Error" });
+    }
+};
+
 
 const deletePostRequirement=async(req,resp)=>{
     const {postId}=req.params
@@ -158,18 +172,49 @@ const getTrainingRequirementComments = async (req, res) => {
     // console.log(findPostTrainingComments.comments)
     try {
         if (!findPostTrainingComments) {
-            return res.status(200).json({ success: false, msg: "No Comments found" });
+            return res.status(404).json({ success: false, msg: "No Comments found" });
         }
         else {
             await findPostTrainingComments.comments.sort((a, b) => b.createdAt - a.createdAt);
-            res.status(200).json({ success: true, message: 'Getting all comments', comments: findPostTrainingComments.comments });
+
+            const postTrainingDetails = await postTrainingRequirementSchema.find().sort({ createdAt: -1 });
+            res.status(200).json({ success: true, message: 'Getting all comments', postTrainingDetails });
+
         }
     }
+
     catch (error) {
         console.log(error)
         res.status(500).json({ success: false, msg: "server error" });
     }
 
+}
+
+const deletePostTrainingComment = async (req, resp) => {
+    const { postId, commentId } = req.params;
+    console.log(postId, commentId);
+    try {
+        const findTrainingPost = await postTrainingRequirementSchema.findById(postId);
+
+        if (!findTrainingPost) {
+            return resp.status(200).json({ success: false, message: "No Post Found" });
+        }
+
+        const commentIndex = findTrainingPost.comments.findIndex(comment => comment._id.toString() === commentId);
+
+        if (commentIndex === -1) {
+            return resp.status(200).json({ success: false, message: "Comment not found" });
+        }
+
+        findTrainingPost.comments.splice(commentIndex, 1);
+        await findTrainingPost.save();
+        const postTrainingDetails = await postTrainingRequirementSchema.find().sort({ createdAt: -1 });
+
+        resp.status(201).json({ success: true, message: 'Comment deleted', postTrainingDetails });
+    } catch (error) {
+        console.log(error);
+        resp.status(500).json({ success: false, message: "Server Error" });
+    }
 }
 
 const getpostTrainingRequirement = async (req, resp) => {
@@ -242,7 +287,7 @@ const getAllPostTrainingRequirement=async(req,resp)=>{
         const postTrainingDetails = await postTrainingRequirementSchema.find()
         .sort({ createdAt: -1 });
 
-        console.log(postTrainingDetails)
+        // console.log(postTrainingDetails)
         if (postTrainingDetails.length == 0) {
             resp.status(404).json({ success: false, message: "No Training Requirements  Found" })
         }
@@ -264,5 +309,6 @@ module.exports = {
     getTrainingRequirementComments,
     addLikeToTrainingPost,
     deletePostRequirement,
-    getAllPostTrainingRequirement
+    getAllPostTrainingRequirement,
+    deletePostTrainingComment
 }
