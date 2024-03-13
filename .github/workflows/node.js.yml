@@ -24,13 +24,13 @@ jobs:
     - run: npm ci
     - run: |
         touch .env
-        echo "${{ secrets.DB }}" >> .env
-        echo “${{secrets.PORT}}” >> .env
-        echo “${{secrets.JWT_TOKEN}}” >> .env
-        echo “${{secrets.OTP_AUTHID}}” >> .env
-        echo “${{secrets.OTP_TOKEN}}” >> .env
-        echo “${{secrets.S3_ACCESSKEY_KEY}}” >> .env
-        echo “${{secrets.S3_SECRET_KEY}}” >> .env
-        echo “${{secrets.S3_BUCKET_REGION}}” >> .env
-        echo “${{secrets.S3_BUCKET_NAME}}” >> .env
+        echo "DB=${{ secrets.DB }}" >> .env
+        echo “PORT=${{secrets.PORT}}” >> .env
+        echo “JWT_TOKEN=${{secrets.JWT_TOKEN}}” >> .env
+        echo “OTP_AUTHID=${{secrets.OTP_AUTHID}}” >> .env
+        echo “OTP_TOKEN=${{secrets.OTP_TOKEN}}” >> .env
+        echo “S3_ACCESSKEY_KEY${{secrets.S3_ACCESSKEY_KEY}}” >> .env
+        echo “S3_SECRET_KEY${{secrets.S3_SECRET_KEY}}” >> .env
+        echo “S3_BUCKET_REGION=${{secrets.S3_BUCKET_REGION}}” >> .env
+        echo “S3_BUCKET_NAME${{secrets.S3_BUCKET_NAME}}” >> .env
     - run: pm2 restart backend
