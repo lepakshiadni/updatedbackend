@@ -69,7 +69,7 @@ function getLocalIpAddress() {
  
 
 const localIp = getLocalIpAddress();
-console.log(localIp)
+console.log(localIp, "TEst")
 
 app.get("/localip",(req,resp)=>{
     try{
