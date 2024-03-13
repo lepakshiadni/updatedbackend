@@ -57,4 +57,4 @@ jobs:
         S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
 
     - name: Print DB 
-      run: echo ${{secrets.DB}}
+      run: echo "${{secrets.DB}}"
