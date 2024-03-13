@@ -1,7 +1,7 @@
 const mongoose=require('mongoose')
 const dotenv=require('dotenv').config()
 const URI=process.env.DB
-
+console.log(URI, "DB")
 const dbconnect=()=>{
     mongoose.connect(URI)
     .then(()=>{

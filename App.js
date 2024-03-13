@@ -69,7 +69,7 @@ function getLocalIpAddress() {
  
 
 const localIp = getLocalIpAddress();
-console.log(localIp)
+console.log(localIp, "TEst")
 
 app.get("/localip",(req,resp)=>{
     try{
@@ -80,7 +80,6 @@ app.get("/localip",(req,resp)=>{
     }
 })
 const PORT = process.env.PORT || 8080
-const server = app.listen(PORT,localIp, () => {
-    console.log(`server is running in the ${PORT}`)
-})
-
+const server = app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
