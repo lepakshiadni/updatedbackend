@@ -35,7 +35,7 @@ jobs:
  
     - run: |
         touch .env
-        echo "DB=${{ secrets.DB }}" >> .env
+        echo "${{ secrets.DB }}" >> .env
       env:
         PORT: ${{ secrets.PORT }}
         JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
@@ -60,7 +60,7 @@ jobs:
  
     - run: |
         touch .env
-        echo "DB=${{ secrets.DB }}" >> .env
+        echo "${{ secrets.DB }}" >> .env
       env:
         PORT: ${{ secrets.PORT }}
         JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
