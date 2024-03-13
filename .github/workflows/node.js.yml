@@ -47,6 +47,7 @@ jobs:
       env:
         PORT: ${{ secrets.PORT }}
         DB: ${{ secrets.DB }}
+        echo "DB length: ${$DB}"
         JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
         OTP_AUTHID: ${{ secrets.OTP_AUTHID }}
         OTP_TOKEN: ${{ secrets.OTP_TOKEN }}
