@@ -1,28 +1,29 @@
 const bcrpt = require('bcrypt')
 const otpSchema = require('../models/otpmodel')
 const userSchema = require('../models/usermodel')
-const plivo = require('plivo');
+// const plivo = require('plivo');
+const Axios =require('axios')
 
-// Initialize the Plivo client
-const authId = process.env.OTP_AUTHID;
+// Initialize the fast2Sms client
 const authToken = process.env.OTP_TOKEN;
-const client = new plivo.Client(authId, authToken);
-// Example function that sends an OTP to a phone number using Plivo
-function sendOTP(phoneNumber, otp) {
-    const message = `Your OTP is ${otp}. Please do not share it with anyone.`;
-    const src = 'Mind0088';
-    const countryCode = '+91'
-    const validnumber=countryCode+phoneNumber
-    const dst = validnumber;
-    const timeLimit = 100
-    client.messages.create(src, dst, message, { time_limit: timeLimit })
-        .then(response => {
-            console.log('OTP sent successfully:', response);
+const sendOTP = async (phoneNumber, otp) => {
+    const smsData = {
+        "route": "otp",
+        "variables_values": otp,
+        "numbers": phoneNumber,
+    }
+    await Axios.post('https://www.fast2sms.com/dev/bulkV2', smsData, {
+        headers: {
+            "authorization": authToken
+        }
+    })
+        .then((resp) => {
+            console.log("sms sent successfully", resp.data);
+            console.log(resp.data)
         })
-        .catch(error => {
-            console.error('Error sending OTP:', error);
-        });
-
+        .catch((error) => {
+            console.log("error in sending sms", error)
+        })
 }
 
 const generateOtp = () => {
@@ -37,7 +38,7 @@ const compareOtp = async (otp, number) => {
     if (!finduser) {
         console.log('user Not fount')
     }
-    else{
+    else {
         const validotp = await bcrpt.compare(otp, finduser?.Otp)
         return validotp
     }
