@@ -1,14 +1,12 @@
 name: Node.js CI
-
+ 
 on:
   push:
     branches: [ "main" ]
  
 jobs:
   build:
- 
     runs-on: self-hosted
- 
     strategy:
       matrix:
         node-version: [20.x]
@@ -16,11 +14,13 @@ jobs:
  
     steps:
     - uses: actions/checkout@v3
+ 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+ 
     - run: npm ci
       env:
         PORT: ${{ secrets.PORT }}
@@ -32,6 +32,20 @@ jobs:
         S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
         S3_BUCKET_REGION: ${{ secrets.S3_BUCKET_REGION }}
         S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+ 
+    - run: |
+        touch .env
+        echo "DB=${{ secrets.DB }}" >> .env
+      env:
+        PORT: ${{ secrets.PORT }}
+        JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
+        OTP_AUTHID: ${{ secrets.OTP_AUTHID }}
+        OTP_TOKEN: ${{ secrets.OTP_TOKEN }}
+        S3_ACCESSKEY_KEY: ${{ secrets.S3_ACCESSKEY_KEY }}
+        S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+        S3_BUCKET_REGION: ${{ secrets.S3_BUCKET_REGION }}
+        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+ 
     - run: npm run build --if-present
       env:
         PORT: ${{ secrets.PORT }}
@@ -43,11 +57,12 @@ jobs:
         S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
         S3_BUCKET_REGION: ${{ secrets.S3_BUCKET_REGION }}
         S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-    - run: pm2 restart backend
+ 
+    - run: |
+        touch .env
+        echo "DB=${{ secrets.DB }}" >> .env
       env:
         PORT: ${{ secrets.PORT }}
-        DB: ${{ secrets.DB }}
-        echo "DB length: ${$DB}"
         JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
         OTP_AUTHID: ${{ secrets.OTP_AUTHID }}
         OTP_TOKEN: ${{ secrets.OTP_TOKEN }}
@@ -55,6 +70,15 @@ jobs:
         S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
         S3_BUCKET_REGION: ${{ secrets.S3_BUCKET_REGION }}
         S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-
-    - name: Print DB 
-      run: echo "${{secrets.DB}}"
+ 
+    - run: pm2 restart backend
+      env:
+        PORT: ${{ secrets.PORT }}
+        DB: ${{ secrets.DB }}
+        JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
+        OTP_AUTHID: ${{ secrets.OTP_AUTHID }}
+        OTP_TOKEN: ${{ secrets.OTP_TOKEN }}
+        S3_ACCESSKEY_KEY: ${{ secrets.S3_ACCESSKEY_KEY }}
+        S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+        S3_BUCKET_REGION: ${{ secrets.S3_BUCKET_REGION }}
+        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
