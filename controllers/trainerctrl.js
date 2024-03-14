@@ -49,7 +49,7 @@ const trainerSignUp = async (req, resp) => {
             const trainerDetails = new trainerSchema({
                 fullName: fullName,
                 experience: experience,
-                skills: skills,
+                skills: skills?.map(({name,image})=>({name,image})),
                 role: role,
                 contactInfo: {
                     primaryNumber: primaryNumber
