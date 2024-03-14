@@ -1,6 +1,6 @@
 const route = require('express').Router()
 const {
-    trainerSignUp, gettrainerProfile,trainerBasicInfoUpdate,trainerSkillsUpdate,trainerCertificateUpdate,trainerContactInfoUpdate,trainerExperienceInfoUpdate,
+    trainerSignUp, gettrainerProfile,trainerBasicInfoUpdate,trainerSkillsUpdate,updateSkillRangeById,trainerCertificateUpdate,trainerContactInfoUpdate,trainerExperienceInfoUpdate,
     addBookMarkedPost,getBookMarkedPostsByUserId,trainerCertificateDelete,getTrainerDetailsById,getSkills,
     trainerAppliedTraining,getAppliedTraining,deleteAppliedTraining,addTrainingResources,
     testProfileApi,
@@ -19,6 +19,7 @@ const upload = multer({ storage: multer.memoryStorage() })  //for image uploadin
 route.post('/trainerSignup', trainerSignUp) // add the trainer details add 1st time
 route.put('/trainerBasicInfoUpdate', jwtverify, upload.fields([{ name: 'profileImg', maxCount: 1 },{ name: 'profileBanner', maxCount: 1 }]), trainerBasicInfoUpdate)
 route.put('/trainerSkillsUpdate',jwtverify,trainerSkillsUpdate)
+route.put('/updateAllSkills/:skillId', jwtverify,updateSkillRangeById)
 route.put('/trainerCertificateUpdate',jwtverify, upload.fields([{name:'certificateImg',maxCount:Infinity}]),trainerCertificateUpdate)
 route.put('/trainerContactInfoUpdate',jwtverify,trainerContactInfoUpdate)
 route.put('/trainerExperienceInfoUpdate',jwtverify,trainerExperienceInfoUpdate)

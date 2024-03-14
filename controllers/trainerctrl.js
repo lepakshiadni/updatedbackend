@@ -3,7 +3,7 @@ const trainerSchema = require('../models/trainermodel');
 const bookMarkedTrainingPostSchema = require('../models/bookmarkedTrainingPostmodel.js');
 const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmodel.js');
 const trainerCreatePostSchema = require('../models/trainerCreatePostmodel.js')
-const SkillSchema=require('../models/skillmodel.js')
+const SkillSchema = require('../models/skillmodel.js')
 const { generateToken } = require('../config/jwttoken.js')
 const { generateS3UploadParams } = require('../utils/uploads3.js')
 require('dotenv').config()
@@ -49,10 +49,10 @@ const trainerSignUp = async (req, resp) => {
             const trainerDetails = new trainerSchema({
                 fullName: fullName,
                 experience: experience,
-                skills: skills?.map(({name,image})=>({name,image})),
+                skills: skills?.map(({ name, image }) => ({ name, image,})),
                 role: role,
                 contactInfo: {
-                    primaryNumber: primaryNumber
+                    primaryNumber: primaryNumber,
                 },
             })
             await trainerDetails.save();
@@ -104,14 +104,14 @@ const trainerBasicInfoUpdate = async (req, resp) => {
         if (req.user) {
             const trainerDetails = await trainerSchema.findByIdAndUpdate({ _id }, {
                 $set: {
-                    'basicInfo.firstName': req.body.firstName ,
-                    'basicInfo.lastName': req.body.lastName ,
-                    'basicInfo.designation': req.body.designation ,
-                    'basicInfo.company': req.body.company ,
+                    'basicInfo.firstName': req.body.firstName,
+                    'basicInfo.lastName': req.body.lastName,
+                    'basicInfo.designation': req.body.designation,
+                    'basicInfo.company': req.body.company,
                     'basicInfo.age': Number(req.body.age) || null,
-                    'basicInfo.location': req.body.location ,
-                    'basicInfo.objective': req.body.objective ,
-                    'basicInfo.aboutYou': req.body.aboutYou ,
+                    'basicInfo.location': req.body.location,
+                    'basicInfo.objective': req.body.objective,
+                    'basicInfo.aboutYou': req.body.aboutYou,
                     'basicInfo.profileImg': profileImgUrl,
                     'basicInfo.profileBanner': profileBannerUrl,
                     'basicInfo.status': req.body.status,
@@ -151,6 +151,38 @@ const trainerSkillsUpdate = async (req, resp) => {
     }
 }
 
+
+const updateSkillRangeById = async (req, res) => {
+    const { _id } = req.user;
+    const { skillId } = req.params;
+    const { newRange } = req.body
+
+    try {
+        // Find the trainer by ID
+        const trainer = await trainerSchema.findById(_id);
+        if (!trainer) {
+            res.status(200).json({ success: false, message: 'user not found' });
+        }
+        else {
+
+            const skillIndex = trainer.skills.findIndex(skill => skill._id.toString() === skillId);
+
+            if (skillIndex === -1) {
+                return res.status(200).json({ success: false, message: 'Skill not found' });
+            }
+            // Update the range of the skill
+            trainer.skills[skillIndex].range = newRange;
+
+            await trainer.save();
+            res.status(201).json({ success: true, message: 'Skill range updated', trainerDetails: trainer });
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
 const trainerCertificateUpdate = async (req, resp) => {
     const { _id } = req.user;
     const { certificateHead, institution, certificationDescription, status } = req.body
@@ -179,7 +211,7 @@ const trainerCertificateUpdate = async (req, resp) => {
             certificateHead: certificateHeadArray[index % certificateHeadArray.length],
             institution: institutionArray[index % institutionArray.length],
             certificationDescription: certificationDescriptionArray[index % certificationDescriptionArray.length],
-            certificateUrl: certificateUrl ,
+            certificateUrl: certificateUrl,
             status: statusArray[index % statusArray.length] || false
         }));
 
@@ -208,7 +240,7 @@ const trainerContactInfoUpdate = async (req, resp) => {
     const {
         primaryNumber, secondaryNumber,
         address, email,
-        website, status
+        website,avaiableData, status
     } = req.body
     console.log(req.body)
     const { _id } = req.user
@@ -218,12 +250,13 @@ const trainerContactInfoUpdate = async (req, resp) => {
         }
         const trainerDetails = await trainerSchema.findOneAndUpdate({ _id }, {
             $set: {
-                'contactInfo.primaryNumber': primaryNumber || '-',
-                'contactInfo.secondaryNumber': secondaryNumber ,
+                'contactInfo.primaryNumber': primaryNumber ,
+                'contactInfo.secondaryNumber': secondaryNumber || 0 ,
                 'contactInfo.address': address || 'Not Available',
                 'contactInfo.email': email || 'Not Provided',
                 'contactInfo.website': website || 'Not Available',
-                'contactInfo.status': status ? true : false
+                'contactInfo.status': status ? true : false,
+                'contactInfo.availableDate':avaiableData ? avaiableData : new Date(),
             }
         })
         await trainerDetails.save()
@@ -303,16 +336,16 @@ const trainerCertificateDelete = async (req, resp) => {
 const getSkills = async (req, resp) => {
     try {
         const skills = await SkillSchema.find()
- 
+
         if (!skills) {
             resp.status(200).json({ success: false, message: "No Data Found" })
- 
+
         } else {
             resp.status(201).json({ success: true, message: 'getting skills', skills })
         }
     } catch (error) {
         console.log(error)
- 
+
     }
 }
 
@@ -417,7 +450,7 @@ const trainerAppliedTraining = async (req, resp) => {
         if (existingApplication) {
             console.log('Already applied');
             return resp.status(200).json({ success: false, message: 'Already Applied' });
-        } 
+        }
         else {
             const findApplication = await trainerAppliedTrainingSchema.findOne({ "trainerId": _id });
             // console.log("findApplication", findApplication)
@@ -507,7 +540,7 @@ const addTrainingResources = async (req, resp) => {
         }
         const trainingResources = uploadResources.map((files, index) => ({
             fileName: fileNameArray[index % fileNameArray.length],
-            fileData: files ,
+            fileData: files,
             fileOriginalName: fileOriginalNameArray[index % fileOriginalNameArray.length],
 
         }))
@@ -604,9 +637,9 @@ const getTrainerDetailsById = async (req, resp) => {
 }
 
 module.exports = {
-    trainerSignUp, gettrainerProfile, trainerBasicInfoUpdate,
+    trainerSignUp, gettrainerProfile, trainerBasicInfoUpdate,updateSkillRangeById,
     trainerSkillsUpdate, trainerCertificateUpdate, trainerContactInfoUpdate,
-    trainerExperienceInfoUpdate, trainerCertificateDelete, getTrainerDetailsById,getSkills,
+    trainerExperienceInfoUpdate, trainerCertificateDelete, getTrainerDetailsById, getSkills,
     addBookMarkedPost, getBookMarkedPostsByUserId,
     trainerAppliedTraining, getAppliedTraining, deleteAppliedTraining, addTrainingResources,
     testProfileApi,

@@ -18,12 +18,17 @@ const trainerSchema = new mongoose.Schema(
                 },
                 image: {
                     type: String,
+                },
+                range: {
+                    type: String
                 }
             }
         ],
         role: {
             type: String,  //trainer or employer
         },
+
+
         basicInfo: {
 
             profileImg: {
@@ -134,6 +139,11 @@ const trainerSchema = new mongoose.Schema(
             website: {
                 type: String
             },
+            availableData: {
+                type: Date,
+                //default value is the current date and time  
+                default: new Date()
+            },
             status: {
                 type: Boolean,
                 default: false
@@ -177,12 +187,6 @@ const trainerSchema = new mongoose.Schema(
                 userId: {
                     type: mongoose.Schema.Types.ObjectId, ref: 'Conversation'
                 }
-            }
-        ],
-        skillsRating: [
-            {
-                skillname: String,
-                rating: { type: Decimal128 }
             }
         ],
         likes: [
