@@ -109,7 +109,7 @@ const employerBasicInfoUpdate = async (req, resp) => {
             profileBannerUrl = data.Location;
 
         }
-
+        
         if (req.user) {
             const employerDetails = await employerSchema.findByIdAndUpdate({ _id }, {
                 $set: {
