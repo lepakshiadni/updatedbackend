@@ -113,17 +113,17 @@ const employerBasicInfoUpdate = async (req, resp) => {
         if (req.user) {
             const employerDetails = await employerSchema.findByIdAndUpdate({ _id }, {
                 $set: {
-                    'basicInfo.firstName': req.body.firstName || '',
-                    'basicInfo.lastName': req.body.lastName || '',
-                    'basicInfo.designation': req.body.designation || '',
-                    'basicInfo.company': req.body.company || '',
+                    'basicInfo.firstName': req.body.firstName,
+                    'basicInfo.lastName': req.body.lastName,
+                    'basicInfo.designation': req.body.designation,
+                    'basicInfo.company': req.body.company,
                     'basicInfo.age': Number(req.body.age) || null,
-                    'basicInfo.location': req.body.location || '',
-                    'basicInfo.objective': req.body.objective || '',
-                    'basicInfo.aboutYou': req.body.aboutYou || '',
+                    'basicInfo.location': req.body.location,
+                    'basicInfo.objective': req.body.objective,
+                    'basicInfo.aboutYou': req.body.aboutYou,
                     'basicInfo.profileImg': profileImgUrl,
                     'basicInfo.profileBanner': profileBannerUrl,
-                    'basicInfo.status': req.body.status || '',
+                    'basicInfo.status': req.body.status,
                 }
             }, { new: true }
             )
@@ -175,8 +175,8 @@ const employerContactInfoUpdate = async (req, resp) => {
         }
         const employerDetails = await employerSchema.findOneAndUpdate({ _id }, {
             $set: {
-                'contactInfo.primaryNumber': primaryNumber || '-',
-                'contactInfo.secondaryNumber': secondaryNumber || '',
+                'contactInfo.primaryNumber': primaryNumber ,
+                'contactInfo.secondaryNumber': secondaryNumber,
                 'contactInfo.address': address || 'Not Available',
                 'contactInfo.email': email || 'Not Provided',
                 'contactInfo.website': website || 'Not Available',

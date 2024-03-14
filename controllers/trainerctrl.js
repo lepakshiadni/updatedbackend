@@ -104,14 +104,14 @@ const trainerBasicInfoUpdate = async (req, resp) => {
         if (req.user) {
             const trainerDetails = await trainerSchema.findByIdAndUpdate({ _id }, {
                 $set: {
-                    'basicInfo.firstName': req.body.firstName || '',
-                    'basicInfo.lastName': req.body.lastName || '',
-                    'basicInfo.designation': req.body.designation || '',
-                    'basicInfo.company': req.body.company || '',
+                    'basicInfo.firstName': req.body.firstName ,
+                    'basicInfo.lastName': req.body.lastName ,
+                    'basicInfo.designation': req.body.designation ,
+                    'basicInfo.company': req.body.company ,
                     'basicInfo.age': Number(req.body.age) || null,
-                    'basicInfo.location': req.body.location || '',
-                    'basicInfo.objective': req.body.objective || '',
-                    'basicInfo.aboutYou': req.body.aboutYou || '',
+                    'basicInfo.location': req.body.location ,
+                    'basicInfo.objective': req.body.objective ,
+                    'basicInfo.aboutYou': req.body.aboutYou ,
                     'basicInfo.profileImg': profileImgUrl,
                     'basicInfo.profileBanner': profileBannerUrl,
                     'basicInfo.status': req.body.status,
@@ -179,7 +179,7 @@ const trainerCertificateUpdate = async (req, resp) => {
             certificateHead: certificateHeadArray[index % certificateHeadArray.length],
             institution: institutionArray[index % institutionArray.length],
             certificationDescription: certificationDescriptionArray[index % certificationDescriptionArray.length],
-            certificateUrl: certificateUrl || '',
+            certificateUrl: certificateUrl ,
             status: statusArray[index % statusArray.length] || false
         }));
 
@@ -219,7 +219,7 @@ const trainerContactInfoUpdate = async (req, resp) => {
         const trainerDetails = await trainerSchema.findOneAndUpdate({ _id }, {
             $set: {
                 'contactInfo.primaryNumber': primaryNumber || '-',
-                'contactInfo.secondaryNumber': secondaryNumber || '',
+                'contactInfo.secondaryNumber': secondaryNumber ,
                 'contactInfo.address': address || 'Not Available',
                 'contactInfo.email': email || 'Not Provided',
                 'contactInfo.website': website || 'Not Available',
@@ -507,7 +507,7 @@ const addTrainingResources = async (req, resp) => {
         }
         const trainingResources = uploadResources.map((files, index) => ({
             fileName: fileNameArray[index % fileNameArray.length],
-            fileData: files || '',
+            fileData: files ,
             fileOriginalName: fileOriginalNameArray[index % fileOriginalNameArray.length],
 
         }))
