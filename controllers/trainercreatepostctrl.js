@@ -201,9 +201,29 @@ const getpostTrainerPost = async (req, resp) => {
     }
 }
 
+//Get trainerPost by user id
+
+const getTrainerPostBy=(req,resp)=>{
+    const {_id}=req.user
+    try{
+        const trainercreatePost=trainerCreatePostSchema.find({postedById:_id})
+        if(trainercreatePost){
+            resp.status(201).json({success:true,message:'Post Fected',trainercreatePost})
+        }
+        else{
+            resp.status(200).json({ success: false, message: "No Post Found" })
+        }
+
+    }
+    catch(error){
+        resp.status(200).json({success:false,message:'Server Error',error})
+    }
+
+}
+
 
 module.exports = {
     trainerCreatePost, addTrainerPostComments, addLikeToTrainerPost,
     getTrainierPostComments, getTrainierPostComments, getpostTrainerPost,
-    getpostTrainercreatePostById, deleteTrainerPostComment
+    getpostTrainercreatePostById, deleteTrainerPostComment,getTrainerPostBy
 }
