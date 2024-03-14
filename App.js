@@ -80,6 +80,10 @@ app.get("/localip",(req,resp)=>{
     }
 })
 
+app.get("/work",(req,resp)=>{
+    resp.send("<h1>Working From Server</h1>")
+})
+
 const PORT = process.env.PORT || 8080
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
