@@ -38,7 +38,7 @@ route.get('/getAppliedTrainingEmployer', jwtverify, getAppliedTrainingEmployer)
 route.put('/updateProfileVisibility',jwtverify,updateProfileVisibility)
 route.get('/getTrainerDetailsById/:id', getTrainerDetailsById)
 route.delete('/employerExperienceInfoUpdate/:_id', jwtverify, employerExperienceInfoDelete)
-route.get('/skills',jwtverify, getSkills)
+route.get('/skills',getSkills)
 
 
 route.put('/updateAppliedStatus', jwtverify, updateAppliedStatus)   // update applied status of training from employer side

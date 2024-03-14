@@ -25,7 +25,7 @@ route.put('/trainerExperienceInfoUpdate',jwtverify,trainerExperienceInfoUpdate)
 route.get('/gettrainerProfile', jwtverify, gettrainerProfile) // to view the profile of the user who is logged in
 route.get('/getTrainerDetailsById/:id', getTrainerDetailsById)   // get the trainer details by id
 route.delete('/trainerCertificateDelete',jwtverify,trainerCertificateDelete) // to delete the ceriticate 
-route.get('/skills',jwtverify, getSkills)
+route.get('/skills', getSkills)
 
 route.post('/addBookMarkePost/:postId', jwtverify, addBookMarkedPost)   // to bookmark a post by trainer
 route.post('/trainerAppliedTraining/:trainingPostId', jwtverify, trainerAppliedTraining)
