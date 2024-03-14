@@ -203,19 +203,21 @@ const getpostTrainerPost = async (req, resp) => {
 
 //Get trainerPost by user id
 
-const getTrainerPostBy=(req,resp)=>{
+const getTrainerPostBy=async(req,resp)=>{
     const {_id}=req.user
     try{
-        const trainercreatePost=trainerCreatePostSchema.find({postedById:_id})
-        if(trainercreatePost){
+        const trainercreatePost= await trainerCreatePostSchema.find({postedById:_id})
+        // console.log(trainercreatePost)
+        if(trainercreatePost.length>0){
             resp.status(201).json({success:true,message:'Post Fected',trainercreatePost})
         }
         else{
-            resp.status(200).json({ success: false, message: "No Post Found" })
+            resp.status(200).json({ success: false, message: "No Post Found",trainerCreatePost:[] })
         }
 
     }
     catch(error){
+        console.log(error)
         resp.status(200).json({success:false,message:'Server Error',error})
     }
 
