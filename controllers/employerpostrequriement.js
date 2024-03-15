@@ -226,14 +226,14 @@ const getpostTrainingRequirement = async (req, resp) => {
 
         console.log(postTrainingDetails)
         if (postTrainingDetails.length == 0) {
-            resp.status(404).json({ success: false, message: "No Training Requirements  Found" })
+            resp.status(200).json({ success: false, message: "No Training Requirements  Found" })
         }
         else {
-            resp.status(200).json({ success: true, message: 'Post TrainingRequirements Fected', postTrainingDetails })
+            resp.status(201).json({ success: true, message: 'Post TrainingRequirements Fected', postTrainingDetails })
         }
     }
     catch (error) {
-        resp.status(500).json({ success: false, message: 'Server Error' ,error});
+        resp.status(200).json({ success: false, message: 'Server Error' ,error});
     }
 }
 
