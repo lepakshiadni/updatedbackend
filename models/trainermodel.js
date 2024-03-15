@@ -139,7 +139,7 @@ const trainerSchema = new mongoose.Schema(
             website: {
                 type: String
             },
-            availableData: {
+            availableDate: {
                 type: Date,
                 //default value is the current date and time  
                 default: new Date()
