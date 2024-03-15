@@ -80,7 +80,7 @@ app.get("/localip",(req,resp)=>{
     }
 })
 
-app.get("/",(req,resp)=>{
+app.get("/work",(req,resp)=>{
     resp.send("<h1>Working From Server</h1>")
 })
 
