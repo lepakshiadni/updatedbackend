@@ -110,7 +110,7 @@ const employerBasicInfoUpdate = async (req, resp) => {
 
         }
         
-        if (req.user) {
+        if (req.user) {  
             const employerDetails = await employerSchema.findByIdAndUpdate({ _id }, {
                 $set: {
                     'basicInfo.firstName': req.body.firstName,
