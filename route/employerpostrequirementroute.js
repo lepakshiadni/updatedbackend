@@ -24,7 +24,7 @@ route.post("/postTrainingRequirement",jwtverify,upload.single('tocFile'),postTra
 route.post("/postJobRequirement",postJobRequirement)
 route.put("/postTrainingRequirementComments/:postId",postTrainingRequirementComments)
 route.put('/addLikeToTrainingPost/:postId',addLikeToTrainingPost)
-route.get("/getpostTrainingRequirement",jwtverify,getpostTrainingRequirement)
+route.get('/getpostTrainingRequirement',jwtverify,getpostTrainingRequirement)
 route.get("/getpostJobRequiement",getpostJobRequirement)
 route.get("/getTrainingRequirementComments/:postId",getTrainingRequirementComments)
 route.delete("/deletePostRequirement/:postId",jwtverify,deletePostRequirement)
