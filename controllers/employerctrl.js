@@ -203,7 +203,7 @@ const employerExperienceInfoUpdate = async (req, resp) => {
     const { _id } = req.user;
     const experienceDetailsArray = req.body; // Assuming req.body is an array of experience details
 
-    console.log(experienceDetailsArray);
+    // console.log(experienceDetailsArray);
 
     try {
         if (req.user) {
