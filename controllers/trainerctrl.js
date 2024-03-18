@@ -559,8 +559,9 @@ const addTrainingResources = async (req, resp) => {
             { new: true }  // This returns the updated data from the db
         )
         await trainingPostData.save()
-        // console.log(trainingPostData)
-        resp.status(201).json({ success: true, message: 'Resouces Added', })
+
+        console.log(trainingPostData)
+        resp.status(201).json({ success: true, message: 'Resouces Added',trainingPostData })
     }
     catch (error) {
         console.log('error', error)
