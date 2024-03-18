@@ -239,7 +239,7 @@ const skillsSchema = new mongoose.Schema({
         type: String,
     }
 })
-const skill = mongoose.model('Skill', skillsSchema)
+const skill = mongoose.model('Skills', skillsSchema)
 
 // skill.insertMany(data)
 

@@ -240,7 +240,7 @@ const trainerContactInfoUpdate = async (req, resp) => {
     const {
         primaryNumber, secondaryNumber,
         address, email,
-        website,avaiableData, status
+        website, avaiableData, status
     } = req.body
     console.log(req.body)
     const { _id } = req.user
@@ -250,13 +250,13 @@ const trainerContactInfoUpdate = async (req, resp) => {
         }
         const trainerDetails = await trainerSchema.findOneAndUpdate({ _id }, {
             $set: {
-                'contactInfo.primaryNumber': primaryNumber ,
-                'contactInfo.secondaryNumber': secondaryNumber || 0 ,
+                'contactInfo.primaryNumber': primaryNumber,
+                'contactInfo.secondaryNumber': secondaryNumber || 0,
                 'contactInfo.address': address || 'Not Available',
                 'contactInfo.email': email || 'Not Provided',
                 'contactInfo.website': website || 'Not Available',
                 'contactInfo.status': status ? true : false,
-                'contactInfo.availableDate':avaiableData ? avaiableData : new Date(),
+                'contactInfo.availableDate': avaiableData ? avaiableData : new Date(),
             }
         })
         await trainerDetails.save()
@@ -545,7 +545,7 @@ const addTrainingResources = async (req, resp) => {
 
         }))
         // console.log("trainingResources", trainingResources)
-        const trainingPostData = await trainerAppliedTrainingSchema.findOneAndUpdate(
+        const addTrainingResources = await trainerAppliedTrainingSchema.findOneAndUpdate(
             {
                 trainerId: _id,
                 'trainingDetails._id': trainingDetailsId// Filter by both trainerId and trainingDetailsId
@@ -558,10 +558,30 @@ const addTrainingResources = async (req, resp) => {
             },
             { new: true }  // This returns the updated data from the db
         )
-        await trainingPostData.save()
+        await addTrainingResources.save()
 
-        console.log(trainingPostData)
-        resp.status(201).json({ success: true, message: 'Resouces Added',trainingPostData })
+        console.log(addTrainingResources)
+        if (addTrainingResources) {
+            const findAppliedTraining = await trainerAppliedTrainingSchema.findOne({ "trainerId": _id }).populate('trainingDetails.trainingPostDetails')
+            const trainingPostData = findAppliedTraining.trainingDetails.map(({ trainingPostDetails, appliedStatus, applicationstatus, _id, trainingResources, feedBackDetails }) => {
+                // Destructure the `tocFile` key from `trainingPostDetails`
+                // const { tocFile, ...updatedTrainingPostDetails } = trainingPostDetails;
+                // Return the updated `trainingPostDetails` object without the `tocFile` key
+                return {
+                    trainingPostDetails,
+                    appliedStatus,
+                    applicationstatus,
+                    _id,
+                    trainingResources,
+                    feedBackDetails
+                };
+            });
+            resp.status(201).json({ success: true, message: 'Resouces Added', trainingPostData })
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'Failed to Add Resources' })
+        }
+
     }
     catch (error) {
         console.log('error', error)
@@ -638,7 +658,7 @@ const getTrainerDetailsById = async (req, resp) => {
 }
 
 module.exports = {
-    trainerSignUp, gettrainerProfile, trainerBasicInfoUpdate,updateSkillRangeById,
+    trainerSignUp, gettrainerProfile, trainerBasicInfoUpdate, updateSkillRangeById,
     trainerSkillsUpdate, trainerCertificateUpdate, trainerContactInfoUpdate,
     trainerExperienceInfoUpdate, trainerCertificateDelete, getTrainerDetailsById, getSkills,
     addBookMarkedPost, getBookMarkedPostsByUserId,
