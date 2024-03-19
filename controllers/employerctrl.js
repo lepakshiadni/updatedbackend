@@ -209,7 +209,7 @@ const employerProfileBannerUpdate = async (req, resp) => {
         }
     }
     catch (error) {
-
+        console.log(error)
     }
 }
 
