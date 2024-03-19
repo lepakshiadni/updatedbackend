@@ -201,7 +201,7 @@ const employerProfileBannerUpdate = async (req, resp) => {
             }, { new: true }
             )
             await employerDetails.save()
-            // console.log(trainerDetails);
+            console.log(employerDetails);
             resp.status(201).json({ success: true, message: 'Profile Banner Updated Successfully', employerDetails });
         }
         else {
