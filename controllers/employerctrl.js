@@ -82,33 +82,33 @@ const employerBasicInfoUpdate = async (req, resp) => {
     const { _id } = req.user
 
     try {
-        let profileImgUrl;
-        if (req.files['profileImg']) {
-            const profileImg = req.files['profileImg'][0];
-            const params = {
-                Bucket: 'sisso-data',
-                Key: `employer/profile/${_id}/${profileImg.originalname}`,
-                Body: profileImg.buffer,
-                ContentType: profileImg.mimetype
-            };
-            const data = await s3.upload(params).promise();
-            profileImgUrl = data.Location;
-        }
+        // let profileImgUrl;
+        // if (req.files['profileImg']) {
+        //     const profileImg = req.files['profileImg'][0];
+        //     const params = {
+        //         Bucket: 'sisso-data',
+        //         Key: `employer/profile/${_id}/${profileImg.originalname}`,
+        //         Body: profileImg.buffer,
+        //         ContentType: profileImg.mimetype
+        //     };
+        //     const data = await s3.upload(params).promise();
+        //     profileImgUrl = data.Location;
+        // }
 
-        // Upload profile banner to S3
-        let profileBannerUrl;
-        if (req.files['profileBanner']) {
-            const profileBanner = req.files['profileBanner'][0];
-            const params = {
-                Bucket: 'sisso-data',
-                Key: `employer/profile/${_id}/${profileBanner.originalname}`,
-                Body: profileBanner.buffer,
-                ContentType: profileBanner.mimetype
-            };
-            const data = await s3.upload(params).promise();
-            profileBannerUrl = data.Location;
+        // // Upload profile banner to S3
+        // let profileBannerUrl;
+        // if (req.files['profileBanner']) {
+        //     const profileBanner = req.files['profileBanner'][0];
+        //     const params = {
+        //         Bucket: 'sisso-data',
+        //         Key: `employer/profile/${_id}/${profileBanner.originalname}`,
+        //         Body: profileBanner.buffer,
+        //         ContentType: profileBanner.mimetype
+        //     };
+        //     const data = await s3.upload(params).promise();
+        //     profileBannerUrl = data.Location;
 
-        }
+        // }
         
         if (req.user) {  
             const employerDetails = await employerSchema.findByIdAndUpdate({ _id }, {
@@ -121,8 +121,8 @@ const employerBasicInfoUpdate = async (req, resp) => {
                     'basicInfo.location': req.body.location,
                     'basicInfo.objective': req.body.objective,
                     'basicInfo.aboutYou': req.body.aboutYou,
-                    'basicInfo.profileImg': profileImgUrl,
-                    'basicInfo.profileBanner': profileBannerUrl,
+                    // 'basicInfo.profileImg': profileImgUrl,
+                    // 'basicInfo.profileBanner': profileBannerUrl,
                     'basicInfo.status': req.body.status,
                 }
             }, { new: true }
@@ -139,6 +139,80 @@ const employerBasicInfoUpdate = async (req, resp) => {
     }
 }
 
+const employerProfileImageUpdate = async (req, resp) => {
+    const { _id } = req.user
+    // console.log(req.file)
+    try {
+        let profileImgUrl;
+        if (req.file) {
+            const profileImg = req.file;
+            const params = {
+                Bucket: 'sisso-data',
+                Key: `profile/${_id}/${profileImg.originalname}`,
+                Body: profileImg.buffer,
+                ContentType: profileImg.mimetype
+            };
+            const data = await s3.upload(params).promise();
+            profileImgUrl = data.Location;
+        }
+        console.log(profileImgUrl);
+        if (req.user) {
+            const employerDetails = await employerSchema.findByIdAndUpdate({ _id }, {
+                $set: {
+                    'basicInfo.profileImg': profileImgUrl,
+                }
+            }, { new: true }
+            )
+            await employerDetails.save()
+            // console.log(trainerDetails);
+            resp.status(201).json({ success: true, message: 'Profile Image Updated Successfully', employerDetails });
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'Unauthorized' })
+        }
+    }
+    catch (error) {
+
+    }
+
+}
+
+const employerProfileBannerUpdate = async (req, resp) => {
+    const { _id } = req.user
+    try {
+        let profileBannerUrl;
+        if (req.file) {
+            const profileBannerImg = req.file;
+            const params = {
+                Bucket: 'sisso-data',
+                Key: `profile/${_id}/${profileBannerImg.originalname}`,
+                Body: profileBannerImg.buffer,
+                ContentType: profileBannerImg.mimetype
+            };
+            const data = await s3.upload(params).promise();
+            profileBannerUrl = data.Location;
+        }
+
+        if (req.user) {
+            const employerDetails = await employerSchema.findByIdAndUpdate({ _id }, {
+                $set: {
+                    'basicInfo.profileBanner': profileBannerUrl
+                }
+            }, { new: true }
+            )
+            await employerDetails.save()
+            console.log(employerDetails);
+            resp.status(201).json({ success: true, message: 'Profile Banner Updated Successfully', employerDetails });
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'Unauthorized' })
+        }
+    }
+    catch (error) {
+
+    }
+}
+
 const employerSkillsUpdate = async (req, resp) => {
     const { _id } = req.user
     try {
@@ -148,7 +222,7 @@ const employerSkillsUpdate = async (req, resp) => {
                 skills: req.body?.map((skill) => skill)
             })
             await employerDetails.save()
-            console.log(employerDetails);
+            // console.log(employerDetails);
             resp.status(201).json({ success: true, message: 'skill updated', employerDetails });
         }
         else {
@@ -417,6 +491,8 @@ const getBookMarkedPostsByUserId = async (req, resp) => {
 module.exports = {
     employerSignUp,
     getemployerProfile,
+    employerProfileImageUpdate,
+    employerProfileBannerUpdate,
     employerBasicInfoUpdate,
     employerSkillsUpdate,
     employerContactInfoUpdate,
