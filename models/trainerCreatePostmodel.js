@@ -61,6 +61,13 @@ const trainerCreatePost = new mongoose.Schema({
                 type: String,
             }
         }
+    ],
+    hide: [
+        {
+            hideBy: {
+                type: String,
+            }
+        }
     ]
 
 }, { timestamps: true }

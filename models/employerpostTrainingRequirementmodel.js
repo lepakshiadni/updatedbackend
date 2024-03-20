@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const employerPostRequriementSchema = new mongoose.Schema({
-    postedById:{
+    postedById: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Employer'  
+        ref: 'Employer'
     },
     postedByName: {
         type: String
@@ -75,8 +75,8 @@ const employerPostRequriementSchema = new mongoose.Schema({
     // Comments feature
     comments: [
         {
-            commentedByUser:{
-                type:String
+            commentedByUser: {
+                type: String
             },
             commentedByProfile: {
                 type: String,
@@ -84,8 +84,8 @@ const employerPostRequriementSchema = new mongoose.Schema({
             commentedByName: {
                 type: String
             },
-            commentedByCompany:{
-                type:String
+            commentedByCompany: {
+                type: String
             },
             comment: {
                 type: String
@@ -102,14 +102,19 @@ const employerPostRequriementSchema = new mongoose.Schema({
                 type: String,
             }
         }
+    ],
+    hide: [
+        {
+            hideBy: {
+                type: String,
+            }
+        }
     ]
-
-
 
 },
     { timestamps: true }
 );
 
-employerPostRequriementSchema.indexes({postedById: 1});
+employerPostRequriementSchema.indexes({ postedById: 1 });
 
 module.exports = mongoose.model('EmployerPostRequirement', employerPostRequriementSchema);
