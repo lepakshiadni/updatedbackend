@@ -31,8 +31,8 @@ const trainerCreatePost = async (req, resp) => {
             const data = await s3.upload(params).promise();
             // console.log("Image uploaded successfully at ", data.Location);
             postImgUrl = data.Location;
-            postedImg.fileName=postImg.filename
-            postedImg.postImg=postImg
+            postedImg.fileName=postImg.originalname
+            postedImg.postImg=postImgUrl
             // const postedImg = {
             //     fileName: postImg.originalname,
             //     postImg: postImgUrl || ''
