@@ -39,9 +39,9 @@ const trainerCreatePost = async (req, resp) => {
             // }
 
         }
-        else {
-            resp.status(200).json({ success: false, message: 'Error in the Upload Image' })
-        }
+        // else {
+        //     resp.status(200).json({ success: false, message: 'Error in the Upload Image' })
+        // }
         if(Object.keys(req.body).length > 0){
 
             const createPost = new trainerCreatePostSchema({
