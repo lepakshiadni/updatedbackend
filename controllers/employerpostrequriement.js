@@ -40,9 +40,9 @@ const postTrainingRequirement = async (req, resp) => {
 
         // Create a new instance of postTrainingRequirementSchema
         const trainingDetails = new postTrainingRequirementSchema({
-            trainingName, description,  typeOfTraining, modeOfTraining,
+            trainingName, description, typeOfTraining, modeOfTraining,
             experience, participantCount, location, minBudget, maxBudget,
-            durationType, durationCount, selectedCountry, availability,topics,
+            durationType, durationCount, selectedCountry, availability, topics,
             startDate: new Date(startDate).toISOString().split('T')[0],
             endDate: new Date(endDate).toISOString().split('T')[0],
             tocFile: {
@@ -50,7 +50,7 @@ const postTrainingRequirement = async (req, resp) => {
                 tocUrl
             },
             urgentlyNeedTrainer, postedById: _id,
-            
+
             postedByName: req.user?.fullName || '',
             postedByCompanyName: req.user?.companyName || '',
             postedByImg: req.user?.basicInfo?.profileImg || '',
@@ -71,8 +71,6 @@ const postTrainingRequirement = async (req, resp) => {
         resp.status(500).json({ success: false, message: 'Server Error' });
     }
 };
-
-
 
 // find postRequiement and add comments
 const postTrainingRequirementComments = async (req, resp) => {
@@ -137,31 +135,28 @@ const addLikeToTrainingPost = async (req, resp) => {
 };
 
 
-const deletePostRequirement=async(req,resp)=>{
-    const {postId}=req.params
+const deletePostRequirement = async (req, resp) => {
+    const { postId } = req.params
     // console.log(postId)
-    try{
-        if(req.user?.role === 'employer'){
-            const postTrainingDetails=await postTrainingRequirementSchema.findOneAndDelete({_id : postId})
+    try {
+        if (req.user?.role === 'employer') {
+            const postTrainingDetails = await postTrainingRequirementSchema.findOneAndDelete({ _id: postId })
             // console.log(findPostTrainingRequirements)
-            if(postTrainingDetails){
-                resp.status(201).json({success:true ,message:"Deleted Successfully",postTrainingDetails})
+            if (postTrainingDetails) {
+                resp.status(201).json({ success: true, message: "Deleted Successfully", postTrainingDetails })
             }
-            else{
-                resp.status(200).json({success:false,message:'Post Not Found'})
+            else {
+                resp.status(200).json({ success: false, message: 'Post Not Found' })
             }
         }
-        else{
-            resp.status(200).json({success:false,message:'Access Denied'})
+        else {
+            resp.status(200).json({ success: false, message: 'Access Denied' })
         }
     }
-    catch(error){
-        resp.status(200).json({success:false,message:'Internal Server Error',error})
+    catch (error) {
+        resp.status(200).json({ success: false, message: 'Internal Server Error', error })
     }
 }
-
-
-
 
 
 // get the post training comments 
@@ -192,7 +187,7 @@ const getTrainingRequirementComments = async (req, res) => {
 
 const deletePostTrainingComment = async (req, resp) => {
     const { postId, commentId } = req.params;
-    console.log(postId, commentId);
+    // console.log(postId, commentId);
     try {
         const findTrainingPost = await postTrainingRequirementSchema.findById(postId);
 
@@ -218,13 +213,13 @@ const deletePostTrainingComment = async (req, resp) => {
 }
 
 const getpostTrainingRequirement = async (req, resp) => {
-    const {_id}=req.user
+    const { _id } = req.user
     // console.log(req.user)
     try {
-        const postTrainingDetails = await postTrainingRequirementSchema.find({postedById:_id})
-        .sort({ createdAt: -1 });
+        const postTrainingDetails = await postTrainingRequirementSchema.find({ postedById: _id })
+            .sort({ createdAt: -1 });
 
-        console.log(postTrainingDetails)
+        // console.log(postTrainingDetails)
         if (postTrainingDetails.length == 0) {
             resp.status(200).json({ success: false, message: "No Training Requirements  Found" })
         }
@@ -233,7 +228,7 @@ const getpostTrainingRequirement = async (req, resp) => {
         }
     }
     catch (error) {
-        resp.status(200).json({ success: false, message: 'Server Error' ,error});
+        resp.status(200).json({ success: false, message: 'Server Error', error });
     }
 }
 
@@ -241,7 +236,7 @@ const postJobRequirement = async (req, resp) => {
     try {
         // Extracting data from request body
         const { jobTitle, description2, description3, salary, benifit, location2, experience2, qualificationRef, topics2 } = req.body;
-        console.log(req.body)
+        // console.log(req.body)
         const PostJobData = new postJobRequirementSchema({
             jobTitle,
             description2,
@@ -257,7 +252,7 @@ const postJobRequirement = async (req, resp) => {
 
         // Saving the new JobPost instance to the database
         await PostJobData.save()
-        console.log(PostJobData)
+        // console.log(PostJobData)
         // Responding with a success message
         resp.status(200).json({ sucess: true, message: 'PostJobDataSaved' })
     }
@@ -282,12 +277,10 @@ const getpostJobRequirement = async (req, resp) => {
     }
 }
 
-const getAllPostTrainingRequirement=async(req,resp)=>{
+const getAllPostTrainingRequirement = async (req, resp) => {
     try {
-        const postTrainingDetails = await postTrainingRequirementSchema.find()
-        .sort({ createdAt: -1 });
+        const postTrainingDetails = await postTrainingRequirementSchema.find().sort({ createdAt: -1 });
 
-        // console.log(postTrainingDetails)
         if (postTrainingDetails.length == 0) {
             resp.status(404).json({ success: false, message: "No Training Requirements  Found" })
         }
@@ -296,7 +289,30 @@ const getAllPostTrainingRequirement=async(req,resp)=>{
         }
     }
     catch (error) {
-        resp.status(500).json({ success: false, message: 'Server Error' ,error});
+        resp.status(500).json({ success: false, message: 'Server Error', error });
+    }
+}
+
+const hidePost = async (req, resp) => {
+    const { hideBy } = req.body;
+    const { postId } = req.params;
+
+    try {
+        const findTrainingPost = await postTrainingRequirementSchema.findById(postId);
+
+        if (!findTrainingPost) {
+            return resp.status(200).json({ success: false, message: "No Post Found" });
+        }
+        else {
+            findTrainingPost.hide.push({ _id: hideBy });
+            await findTrainingPost.save();
+
+            const postTrainingDetails = await postTrainingRequirementSchema.find().sort({ createdAt: -1 });
+            resp.status(201).json({ success: true, message: 'post Hided', postTrainingDetails });
+        }
+    } catch (error) {
+        console.log(error);
+        resp.status(500).json({ success: false, message: "Server Error" });
     }
 }
 
@@ -310,5 +326,6 @@ module.exports = {
     addLikeToTrainingPost,
     deletePostRequirement,
     getAllPostTrainingRequirement,
-    deletePostTrainingComment
+    deletePostTrainingComment,
+    hidePost
 }
