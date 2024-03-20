@@ -146,12 +146,15 @@ const trainerProfileImageUpdate = async (req, resp) => {
         let profileImgUrl;
         if (req.file) {
             const profileImg = req.file;
+
             const params = {
                 Bucket: 'sisso-data',
+                region: "ap-south-1",
                 Key: `profile/${_id}/${profileImg.originalname}`,
                 Body: profileImg.buffer,
-                ContentType: profileImg.mimetype
+                ContentType: profileImg.mimetype,
             };
+
             const data = await s3.upload(params).promise();
             profileImgUrl = data.Location;
         }
@@ -185,6 +188,7 @@ const trainerProfileBannerUpdate = async (req, resp) => {
             const profileBannerImg = req.file;
             const params = {
                 Bucket: 'sisso-data',
+                region: "ap-south-1",
                 Key: `profile/${_id}/${profileBannerImg.originalname}`,
                 Body: profileBannerImg.buffer,
                 ContentType: profileBannerImg.mimetype
