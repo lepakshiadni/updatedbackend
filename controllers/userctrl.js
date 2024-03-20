@@ -35,6 +35,9 @@ const generateopt = async (req, resp) => {
 
 }
 
+
+//
+
 //Verify opt api 
 
 // const verifyOtp = async (req, resp) => {

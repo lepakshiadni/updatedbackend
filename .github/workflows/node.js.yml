@@ -1,5 +1,5 @@
 name: Node.js CI
- 
+
 on:
   push:
     branches: [ "main" ]
@@ -24,13 +24,15 @@ jobs:
     - run: npm ci
     - run: |
         touch .env
-        echo DB=${{ secrets.DB }} >> .env
+        echo "DB=${{secrets.DB}}"
+        echo DB="${{ secrets.DB }}" >> .env
         echo PORT=${{secrets.PORT}} >> .env
         echo JWT_TOKEN=${{secrets.JWT_TOKEN}} >> .env
         echo OTP_AUTHID=${{secrets.OTP_AUTHID}} >> .env
         echo OTP_TOKEN=${{secrets.OTP_TOKEN}} >> .env
-        echo S3_ACCESSKEY_KEY${{secrets.S3_ACCESSKEY_KEY}} >> .env
-        echo S3_SECRET_KEY${{secrets.S3_SECRET_KEY}} >> .env
+        echo S3_ACCESSKEY_KEY=${{secrets.S3_ACCESSKEY_KEY}} >> .env
+        echo S3_SECRET_KEY=${{secrets.S3_SECRET_KEY}} >> .env
         echo S3_BUCKET_REGION=${{secrets.S3_BUCKET_REGION}} >> .env
         echo S3_BUCKET_NAME${{secrets.S3_BUCKET_NAME}} >> .env
+        cat .env
     - run: pm2 restart backend

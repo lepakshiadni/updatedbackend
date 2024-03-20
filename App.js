@@ -28,7 +28,10 @@ app.use(express.urlencoded({
     extended:true
 }))
 app.use(cookieParser())
-app.use(cors())
+app.use(cors({
+    origin:"*",
+    credentials: true 
+}))
 
 
 dbconnect()
@@ -69,7 +72,7 @@ function getLocalIpAddress() {
  
 
 const localIp = getLocalIpAddress();
-console.log(localIp, "TEst")
+console.log(localIp, "Test")
 
 app.get("/localip",(req,resp)=>{
     try{
@@ -88,3 +91,5 @@ const PORT = process.env.PORT || 8080
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+

@@ -106,7 +106,7 @@ const addLikeToTrainingPost = async (req, resp) => {
         const findTrainingPost = await postTrainingRequirementSchema.findById(postId);
 
         if (!findTrainingPost) {
-            return resp.status(404).json({ success: false, message: "No Post Found" });
+            return resp.status(200).json({ success: false, message: "No Post Found" });
         }
 
         // Check if likedBy already exists in the likes array
@@ -266,10 +266,10 @@ const getpostJobRequirement = async (req, resp) => {
     try {
         const postJobRequiementDetails = await postJobRequirementSchema.find()
         if (postJobRequiementDetails) {
-            resp.status(200).json({ success: true, message: 'postJobDetails fetched', postJobRequiementDetails })
+            resp.status(201).json({ success: true, message: 'postJobDetails fetched', postJobRequiementDetails })
         }
         else {
-            resp.status(404).json({ success: false, message: 'postJobDetails Data Not Found' })
+            resp.status(200).json({ success: false, message: 'postJobDetails Data Not Found' })
         }
     }
     catch (error) {
@@ -282,7 +282,7 @@ const getAllPostTrainingRequirement = async (req, resp) => {
         const postTrainingDetails = await postTrainingRequirementSchema.find().sort({ createdAt: -1 });
 
         if (postTrainingDetails.length == 0) {
-            resp.status(404).json({ success: false, message: "No Training Requirements  Found" })
+            resp.status(200).json({ success: false, message: "No Training Requirements  Found" })
         }
         else {
             resp.status(200).json({ success: true, message: 'Post TrainingRequirements Fected', postTrainingDetails })

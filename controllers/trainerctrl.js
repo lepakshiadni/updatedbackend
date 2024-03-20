@@ -73,10 +73,79 @@ const trainerSignUp = async (req, resp) => {
 const trainerBasicInfoUpdate = async (req, resp) => {
     const { _id } = req.user
     console.log(req.body)
+
+    try {
+        // let profileImgUrl;
+        // if (req.files['profileImg']) {
+        //     const profileImg = req.files['profileImg'][0];
+        //     const params = {
+        //         Bucket: 'sisso-data',
+        //         Key: `profile/${_id}/${profileImg.originalname}`,
+        //         Body: profileImg.buffer,
+        //         ContentType: profileImg.mimetype
+        //     };
+        //     const data = await s3.upload(params).promise();
+        //     profileImgUrl = data.Location;
+        // }
+
+        // Upload profile banner to S3
+        // let profileBannerUrl;
+        // if (req.files['profileBanner']) {
+        //     const profileBanner = req.files['profileBanner'][0];
+        //     const params = {
+        //         Bucket: 'sisso-data',
+        //         Key: `profile/${_id}/${profileBanner.originalname}`,
+        //         Body: profileBanner.buffer,
+        //         ContentType: profileBanner.mimetype
+        //     };
+        //     const data = await s3.upload(params).promise();
+        //     profileBannerUrl = data.Location;
+        // }
+
+        if (req.user) {
+            if (Object.keys(req.body).length > 0) {
+
+                const trainerDetails = await trainerSchema.findByIdAndUpdate({ _id }, {
+                    $set: {
+                        'basicInfo.firstName': req.body.firstName,
+                        'basicInfo.lastName': req.body.lastName,
+                        'basicInfo.designation': req.body.designation,
+                        'basicInfo.company': req.body.company,
+                        'basicInfo.age': Number(req.body.age) || 0,
+                        'basicInfo.location': req.body.location,
+                        'basicInfo.objective': req.body.objective,
+                        'basicInfo.aboutYou': req.body.aboutYou,
+                        // 'basicInfo.profileImg': profileImgUrl,
+                        // 'basicInfo.profileBanner': profileBannerUrl,
+                        'basicInfo.status': req.body.status,
+                    }
+                }, { new: true }
+                )
+                await trainerDetails.save()
+                // console.log(trainerDetails);
+                resp.status(201).json({ success: true, message: 'Basic Info Updated Successfully', trainerDetails });
+            }
+            else{
+                resp.status(200).json({success: false, message:"No request body found"})
+            }
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'Unauthorized' })
+        }
+    }
+    catch (error) {
+        console.log(error)
+        resp.status(200).json({ success: false, error });
+    }
+}
+
+const trainerProfileImageUpdate = async (req, resp) => {
+    const { _id } = req.user
+    console.log(req.file);
     try {
         let profileImgUrl;
-        if (req.files['profileImg']) {
-            const profileImg = req.files['profileImg'][0];
+        if (req.file) {
+            const profileImg = req.file;
             const params = {
                 Bucket: 'sisso-data',
                 Key: `profile/${_id}/${profileImg.originalname}`,
@@ -86,16 +155,39 @@ const trainerBasicInfoUpdate = async (req, resp) => {
             const data = await s3.upload(params).promise();
             profileImgUrl = data.Location;
         }
+        console.log(profileImgUrl);
+        if (req.user) {
+            const trainerDetails = await trainerSchema.findByIdAndUpdate({ _id }, {
+                $set: {
+                    'basicInfo.profileImg': profileImgUrl,
+                }
+            }, { new: true }
+            )
+            await trainerDetails.save()
+            // console.log(trainerDetails);
+            resp.status(201).json({ success: true, message: 'Profile Image Updated Successfully', trainerDetails });
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'Unauthorized' })
+        }
+    }
+    catch (error) {
 
-        // Upload profile banner to S3
+    }
+
+}
+
+const trainerProfileBannerUpdate = async (req, resp) => {
+    const { _id } = req.user
+    try {
         let profileBannerUrl;
-        if (req.files['profileBanner']) {
-            const profileBanner = req.files['profileBanner'][0];
+        if (req.file) {
+            const profileBannerImg = req.file;
             const params = {
                 Bucket: 'sisso-data',
-                Key: `profile/${_id}/${profileBanner.originalname}`,
-                Body: profileBanner.buffer,
-                ContentType: profileBanner.mimetype
+                Key: `profile/${_id}/${profileBannerImg.originalname}`,
+                Body: profileBannerImg.buffer,
+                ContentType: profileBannerImg.mimetype
             };
             const data = await s3.upload(params).promise();
             profileBannerUrl = data.Location;
@@ -104,30 +196,20 @@ const trainerBasicInfoUpdate = async (req, resp) => {
         if (req.user) {
             const trainerDetails = await trainerSchema.findByIdAndUpdate({ _id }, {
                 $set: {
-                    'basicInfo.firstName': req.body.firstName,
-                    'basicInfo.lastName': req.body.lastName,
-                    'basicInfo.designation': req.body.designation,
-                    'basicInfo.company': req.body.company,
-                    'basicInfo.age': Number(req.body.age) || null,
-                    'basicInfo.location': req.body.location,
-                    'basicInfo.objective': req.body.objective,
-                    'basicInfo.aboutYou': req.body.aboutYou,
-                    'basicInfo.profileImg': profileImgUrl,
-                    'basicInfo.profileBanner': profileBannerUrl,
-                    'basicInfo.status': req.body.status,
+                    'basicInfo.profileBanner': profileBannerUrl
                 }
             }, { new: true }
             )
             await trainerDetails.save()
             // console.log(trainerDetails);
-            resp.status(201).json({ success: true, message: 'Basic Info Updated Successfully', trainerDetails });
+            resp.status(201).json({ success: true, message: 'Profile Banner Updated Successfully', trainerDetails });
         }
         else {
             resp.status(200).json({ success: false, message: 'Unauthorized' })
         }
     }
     catch (error) {
-        resp.status(200).json({ success: false, error });
+
     }
 }
 
@@ -240,7 +322,7 @@ const trainerContactInfoUpdate = async (req, resp) => {
     const {
         primaryNumber, secondaryNumber,
         address, email,
-        website,avaiableData, status
+        website, avaiableData, status
     } = req.body
     console.log(req.body)
     const { _id } = req.user
@@ -250,13 +332,13 @@ const trainerContactInfoUpdate = async (req, resp) => {
         }
         const trainerDetails = await trainerSchema.findOneAndUpdate({ _id }, {
             $set: {
-                'contactInfo.primaryNumber': primaryNumber ,
-                'contactInfo.secondaryNumber': secondaryNumber || 0 ,
+                'contactInfo.primaryNumber': primaryNumber,
+                'contactInfo.secondaryNumber': secondaryNumber || 0,
                 'contactInfo.address': address || 'Not Available',
                 'contactInfo.email': email || 'Not Provided',
                 'contactInfo.website': website || 'Not Available',
                 'contactInfo.status': status ? true : false,
-                'contactInfo.availableDate':avaiableData ? avaiableData : new Date(),
+                'contactInfo.availableDate': avaiableData ? avaiableData : new Date(),
             }
         })
         await trainerDetails.save()
@@ -314,7 +396,7 @@ const trainerExperienceInfoUpdate = async (req, resp) => {
 const trainerCertificateDelete = async (req, resp) => {
     const { _id } = req.user;
 
-    const certificateIdToDelete = req.params._id; // Assuming you're passing the experience ID as a URL parameter
+    const certificateIdToDelete = req.params.id; // Assuming you're passing the experience ID as a URL parameter
     try {
         if (req.user) {
             const trainerDetails = await trainerSchema.findByIdAndUpdate(
@@ -545,7 +627,7 @@ const addTrainingResources = async (req, resp) => {
 
         }))
         // console.log("trainingResources", trainingResources)
-        const trainingPostData = await trainerAppliedTrainingSchema.findOneAndUpdate(
+        const addTrainingResources = await trainerAppliedTrainingSchema.findOneAndUpdate(
             {
                 trainerId: _id,
                 'trainingDetails._id': trainingDetailsId// Filter by both trainerId and trainingDetailsId
@@ -558,9 +640,30 @@ const addTrainingResources = async (req, resp) => {
             },
             { new: true }  // This returns the updated data from the db
         )
-        await trainingPostData.save()
-        // console.log(trainingPostData)
-        resp.status(201).json({ success: true, message: 'Resouces Added', })
+        await addTrainingResources.save()
+
+        console.log(addTrainingResources)
+        if (addTrainingResources) {
+            const findAppliedTraining = await trainerAppliedTrainingSchema.findOne({ "trainerId": _id }).populate('trainingDetails.trainingPostDetails')
+            const trainingPostData = findAppliedTraining.trainingDetails.map(({ trainingPostDetails, appliedStatus, applicationstatus, _id, trainingResources, feedBackDetails }) => {
+                // Destructure the `tocFile` key from `trainingPostDetails`
+                // const { tocFile, ...updatedTrainingPostDetails } = trainingPostDetails;
+                // Return the updated `trainingPostDetails` object without the `tocFile` key
+                return {
+                    trainingPostDetails,
+                    appliedStatus,
+                    applicationstatus,
+                    _id,
+                    trainingResources,
+                    feedBackDetails
+                };
+            });
+            resp.status(201).json({ success: true, message: 'Resouces Added', trainingPostData })
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'Failed to Add Resources' })
+        }
+
     }
     catch (error) {
         console.log('error', error)
@@ -637,10 +740,10 @@ const getTrainerDetailsById = async (req, resp) => {
 }
 
 module.exports = {
-    trainerSignUp, gettrainerProfile, trainerBasicInfoUpdate,updateSkillRangeById,
-    trainerSkillsUpdate, trainerCertificateUpdate, trainerContactInfoUpdate,
+    trainerSignUp, gettrainerProfile, trainerBasicInfoUpdate, updateSkillRangeById,
+    trainerSkillsUpdate, trainerCertificateUpdate, trainerContactInfoUpdate, trainerProfileBannerUpdate,
     trainerExperienceInfoUpdate, trainerCertificateDelete, getTrainerDetailsById, getSkills,
-    addBookMarkedPost, getBookMarkedPostsByUserId,
+    addBookMarkedPost, getBookMarkedPostsByUserId, trainerProfileImageUpdate,
     trainerAppliedTraining, getAppliedTraining, deleteAppliedTraining, addTrainingResources,
     testProfileApi,
     getAllTrainerDetails
