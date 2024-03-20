@@ -109,8 +109,9 @@ const employerBasicInfoUpdate = async (req, resp) => {
         //     profileBannerUrl = data.Location;
 
         // }
+        console.log(req.body.firstName)
         
-        if (req.user) {  
+        if (req.user && req.body) {  
             const employerDetails = await employerSchema.findByIdAndUpdate({ _id }, {
                 $set: {
                     'basicInfo.firstName': req.body.firstName,
@@ -128,6 +129,7 @@ const employerBasicInfoUpdate = async (req, resp) => {
             }, { new: true }
             )
             await employerDetails.save()
+            // console.log('employerDetalls', employerDetails);
             resp.status(201).json({ success: true, message: 'Basic Info Updated Successfully', employerDetails });
         }
         else {
@@ -141,7 +143,7 @@ const employerBasicInfoUpdate = async (req, resp) => {
 
 const employerProfileImageUpdate = async (req, resp) => {
     const { _id } = req.user
-    // console.log(req.file)
+    console.log(req.file)
     try {
         let profileImgUrl;
         if (req.file) {
@@ -164,7 +166,7 @@ const employerProfileImageUpdate = async (req, resp) => {
             }, { new: true }
             )
             await employerDetails.save()
-            // console.log(trainerDetails);
+            // console.log(employerDetails);
             resp.status(201).json({ success: true, message: 'Profile Image Updated Successfully', employerDetails });
         }
         else {
@@ -201,7 +203,7 @@ const employerProfileBannerUpdate = async (req, resp) => {
             }, { new: true }
             )
             await employerDetails.save()
-            console.log(employerDetails);
+            // console.log(employerDetails);
             resp.status(201).json({ success: true, message: 'Profile Banner Updated Successfully', employerDetails });
         }
         else {

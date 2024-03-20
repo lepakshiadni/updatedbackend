@@ -72,7 +72,7 @@ const trainerSignUp = async (req, resp) => {
 
 const trainerBasicInfoUpdate = async (req, resp) => {
     const { _id } = req.user
-    // console.log(req.body)
+    console.log(req.body)
     try {
         // let profileImgUrl;
         // if (req.files['profileImg']) {
@@ -102,38 +102,45 @@ const trainerBasicInfoUpdate = async (req, resp) => {
         // }
 
         if (req.user) {
-            const trainerDetails = await trainerSchema.findByIdAndUpdate({ _id }, {
-                $set: {
-                    'basicInfo.firstName': req.body.firstName,
-                    'basicInfo.lastName': req.body.lastName,
-                    'basicInfo.designation': req.body.designation,
-                    'basicInfo.company': req.body.company,
-                    'basicInfo.age': Number(req.body.age) || null,
-                    'basicInfo.location': req.body.location,
-                    'basicInfo.objective': req.body.objective,
-                    'basicInfo.aboutYou': req.body.aboutYou,
-                    // 'basicInfo.profileImg': profileImgUrl,
-                    // 'basicInfo.profileBanner': profileBannerUrl,
-                    'basicInfo.status': req.body.status,
-                }
-            }, { new: true }
-            )
-            await trainerDetails.save()
-            // console.log(trainerDetails);
-            resp.status(201).json({ success: true, message: 'Basic Info Updated Successfully', trainerDetails });
+            if (Object.keys(req.body).length > 0) {
+
+                const trainerDetails = await trainerSchema.findByIdAndUpdate({ _id }, {
+                    $set: {
+                        'basicInfo.firstName': req.body.firstName,
+                        'basicInfo.lastName': req.body.lastName,
+                        'basicInfo.designation': req.body.designation,
+                        'basicInfo.company': req.body.company,
+                        'basicInfo.age': Number(req.body.age) || 0,
+                        'basicInfo.location': req.body.location,
+                        'basicInfo.objective': req.body.objective,
+                        'basicInfo.aboutYou': req.body.aboutYou,
+                        // 'basicInfo.profileImg': profileImgUrl,
+                        // 'basicInfo.profileBanner': profileBannerUrl,
+                        'basicInfo.status': req.body.status,
+                    }
+                }, { new: true }
+                )
+                await trainerDetails.save()
+                // console.log(trainerDetails);
+                resp.status(201).json({ success: true, message: 'Basic Info Updated Successfully', trainerDetails });
+            }
+            else{
+                resp.status(200).json({success: false, message:"No request body found"})
+            }
         }
         else {
             resp.status(200).json({ success: false, message: 'Unauthorized' })
         }
     }
     catch (error) {
+        console.log(error)
         resp.status(200).json({ success: false, error });
     }
 }
 
 const trainerProfileImageUpdate = async (req, resp) => {
     const { _id } = req.user
-    // console.log(req.file)
+    console.log(req.file);
     try {
         let profileImgUrl;
         if (req.file) {
