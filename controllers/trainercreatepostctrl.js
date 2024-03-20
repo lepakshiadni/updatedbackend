@@ -182,7 +182,7 @@ const getTrainierPostComments = async (req, res) => {
 const getpostTrainercreatePostById = async (req, resp) => {
     const { postId } = req.params
     try {
-        const trainercreatePost = await trainerCreatePostSchema.findById(postId)
+        const trainercreatePost = await trainerCreatePostSchema.findById(postId).sort({ createdAt: -1 })
         
         if (!trainercreatePost) {
             resp.status(200).json({ success: false, message: "No Post Found" })
