@@ -15,7 +15,11 @@ const trainerCreatePost = async (req, resp) => {
 
     try {
         let postImgUrl;
+        let postedImg={
+            fileName: '',
+            postImg: ''
 
+        }
         if (req.file) {
             const postImg = req.file
             const params = {
@@ -27,10 +31,19 @@ const trainerCreatePost = async (req, resp) => {
             const data = await s3.upload(params).promise();
             // console.log("Image uploaded successfully at ", data.Location);
             postImgUrl = data.Location;
-            const postedImg = {
-                fileName: postImg.originalname,
-                postImg: postImgUrl || ''
-            }
+            postedImg.fileName=postImg.filename
+            postedImg.postImg=postImg
+            // const postedImg = {
+            //     fileName: postImg.originalname,
+            //     postImg: postImgUrl || ''
+            // }
+
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'Error in the Upload Image' })
+        }
+        if(Object.keys(req.body).length > 0){
+
             const createPost = new trainerCreatePostSchema({
                 postedById: _id,
                 postedByName: `${req.user?.basicInfo?.firstName} ${req.user?.basicInfo?.lastName}`,
@@ -46,13 +59,13 @@ const trainerCreatePost = async (req, resp) => {
             createPost.save()
             resp.status(201).json({ success: true, message: "Your Post has been created Successfully!", createPost });
         }
-        else {
-            resp.status(200).json({ success: false, message: 'Error in the Upload Image' })
+        else{
+            resp.status(200).json({success:false ,message:"No Data Provided"})
         }
     }
     catch (error) {
         console.log('error', error)
-        resp.status(500).json({ success: false, message: "Internal Server Error" });
+        resp.status(500).json({ success: false, message: "Internal Server Error", error });
     }
 }
 
