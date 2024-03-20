@@ -92,7 +92,7 @@ const postTrainingRequirementComments = async (req, resp) => {
     }
     catch (error) {
         console.log(error)
-        resp.status(500).json({ sucess: false, message: "Server Error" })
+        resp.status(500).json({ sucess: false, message: "Server Error", error })
     }
 
 }
