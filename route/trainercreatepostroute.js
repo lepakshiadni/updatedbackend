@@ -2,7 +2,7 @@ const route = require('express').Router()
 
 const {
     trainerCreatePost, addTrainerPostComments, addLikeToTrainerPost,getTrainerPostBy,
-    getTrainierPostComments, getpostTrainerPost, getpostTrainercreatePostById, deleteTrainerPostComment
+    getTrainierPostComments, getpostTrainerPost, getpostTrainercreatePostById, deleteTrainerPostComment, hidePost
 
 } = require('../controllers/trainercreatepostctrl')
 const { jwtverify } = require('../middleware/jwtverify')
@@ -19,8 +19,7 @@ route.get('/getTrainierPostComments/:postId', getTrainierPostComments)
 route.get('/getpostTrainingRequirement', getpostTrainerPost)
 route.get('/getpostTrainercreatePostById/:postId', getpostTrainercreatePostById)
 route.get('/getTrainerPostBy',jwtverify, getTrainerPostBy)
-
-
+route.post('/hidePost/:postId', hidePost)
 
 
 module.exports = route;

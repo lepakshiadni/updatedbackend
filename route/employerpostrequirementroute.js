@@ -9,7 +9,8 @@ const {
     addLikeToTrainingPost,
     deletePostRequirement,
     getAllPostTrainingRequirement,
-    deletePostTrainingComment
+    deletePostTrainingComment,
+    hidePost
 } =require('../controllers/employerpostrequriement')
 
 const {jwtverify} =require('../middleware/jwtverify')
@@ -31,6 +32,6 @@ route.get("/getTrainingRequirementComments/:postId",getTrainingRequirementCommen
 route.delete("/deletePostRequirement/:postId",jwtverify,deletePostRequirement)
 route.delete('/deletePostTrainingComment/:postId/:commentId', deletePostTrainingComment)
 route.get('/getAllPostTrainingRequirement',getAllPostTrainingRequirement)
-
+route.post('/hidePost/:postId', hidePost)
  
 module.exports=route

@@ -73,6 +73,7 @@ const trainerSignUp = async (req, resp) => {
 const trainerBasicInfoUpdate = async (req, resp) => {
     const { _id } = req.user
     console.log(req.body)
+
     try {
         // let profileImgUrl;
         // if (req.files['profileImg']) {

@@ -61,13 +61,11 @@ const addLikeToTrainerPost = async (req, resp) => {
     const { likedBy } = req.body;
     const { postId } = req.params;
 
-    console.log(postId, likedBy);
-
     try {
         const findTrainingPost = await trainerCreatePostSchema.findById(postId);
 
         if (!findTrainingPost) {
-            return resp.status(404).json({ success: false, message: "No Post Found" });
+            return resp.status(200).json({ success: false, message: "No Post Found" });
         }
 
         // Check if likedBy already exists in the likes array
@@ -102,7 +100,7 @@ const addTrainerPostComments = async (req, resp) => {
         const findTrainerPost = await trainerCreatePostSchema.findById(postId);
 
         if (!findTrainerPost) {
-            return resp.status(404).json({ success: false, message: " No Post Found" })
+            return resp.status(200).json({ success: false, message: " No Post Found" })
         }
         // console.log(findTrainingPost)
         findTrainerPost.comments.push(comment);
@@ -121,7 +119,6 @@ const addTrainerPostComments = async (req, resp) => {
 
 const deleteTrainerPostComment = async (req, resp) => {
     const { postId, commentId } = req.params;
-    console.log(postId, commentId);
     try {
         const findTrainerPost = await trainerCreatePostSchema.findById(postId);
 
@@ -173,11 +170,12 @@ const getpostTrainercreatePostById = async (req, resp) => {
     const { postId } = req.params
     try {
         const trainercreatePost = await trainerCreatePostSchema.findById(postId)
+        
         if (!trainercreatePost) {
-            resp.status(404).json({ success: false, message: "No Post Found" })
+            resp.status(200).json({ success: false, message: "No Post Found" })
         }
         else {
-            resp.status(200).json({ success: true, message: 'Post Fected', trainercreatePost })
+            resp.status(201).json({ success: true, message: 'Post Fected', trainercreatePost })
         }
     }
     catch (error) {
@@ -188,6 +186,7 @@ const getpostTrainercreatePostById = async (req, resp) => {
 const getpostTrainerPost = async (req, resp) => {
     try {
         const trainercreatePost = await trainerCreatePostSchema.find().sort({ createdAt: -1 });
+        console.log(trainercreatePost);
         if (trainercreatePost.length == 0) {
             resp.status(200).json({ success: false, message: "No Post Found" })
         }
@@ -203,29 +202,50 @@ const getpostTrainerPost = async (req, resp) => {
 
 //Get trainerPost by user id
 
-const getTrainerPostBy=async(req,resp)=>{
-    const {_id}=req.user
-    try{
-        const trainercreatePost= await trainerCreatePostSchema.find({postedById:_id})
+const getTrainerPostBy = async (req, resp) => {
+    const { _id } = req.user
+    try {
+        const trainercreatePost = await trainerCreatePostSchema.find({ postedById: _id })
         // console.log(trainercreatePost)
-        if(trainercreatePost.length>0){
-            resp.status(201).json({success:true,message:'Post Fected',trainercreatePost})
+        if (trainercreatePost.length > 0) {
+            resp.status(201).json({ success: true, message: 'Post Fected', trainercreatePost })
         }
-        else{
-            resp.status(200).json({ success: false, message: "No Post Found",trainerCreatePost:[] })
+        else {
+            resp.status(200).json({ success: false, message: "No Post Found", trainerCreatePost: [] })
         }
-
     }
-    catch(error){
+    catch (error) {
         console.log(error)
-        resp.status(200).json({success:false,message:'Server Error',error})
+        resp.status(200).json({ success: false, message: 'Server Error', error })
     }
+}
 
+const hidePost = async (req,resp) => {
+    const { hideBy } = req.body;
+    const { postId } = req.params;
+
+    try {
+        const findTrainingPost = await trainerCreatePostSchema.findById(postId);
+
+        if (!findTrainingPost) {
+            return resp.status(200).json({ success: false, message: "No Post Found" });
+        }
+        else {
+            findTrainingPost.hide.push({ _id: hideBy }); 
+            await findTrainingPost.save();
+            const trainercreatePost = await trainerCreatePostSchema.find().sort({ createdAt: -1 })
+            resp.status(201).json({ success: true, message: 'post Hided', trainercreatePost });
+        }
+
+    } catch (error) {
+        console.log(error);
+        resp.status(500).json({ success: false, message: "Server Error" });
+    }
 }
 
 
 module.exports = {
     trainerCreatePost, addTrainerPostComments, addLikeToTrainerPost,
     getTrainierPostComments, getTrainierPostComments, getpostTrainerPost,
-    getpostTrainercreatePostById, deleteTrainerPostComment,getTrainerPostBy
+    getpostTrainercreatePostById, deleteTrainerPostComment, getTrainerPostBy, hidePost
 }

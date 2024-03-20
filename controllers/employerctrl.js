@@ -484,12 +484,6 @@ const getBookMarkedPostsByUserId = async (req, resp) => {
 };
 
 
-
-
-
-
-
-
 module.exports = {
     employerSignUp,
     getemployerProfile,
