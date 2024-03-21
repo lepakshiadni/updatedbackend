@@ -18,7 +18,7 @@ const upload = multer({ storage: multer.memoryStorage() })  //for image uploadin
 // route for trainers api
 
 route.post('/trainerSignup', trainerSignUp) // add the trainer details add 1st time
-route.put('/trainerBasicInfoUpdate', jwtverify, trainerBasicInfoUpdate)
+route.put('/trainerBasicInfoUpdate', jwtverify,upload.fields([{ name: 'profileImg', maxCount: 1 },{ name: 'profileBanner', maxCount: 1 }]), trainerBasicInfoUpdate)
 route.put('/trainerProfileImgUpdate',jwtverify,upload.single("profileImg"),trainerProfileImageUpdate) // update profile image of a user
 route.put('/trainerProfileBannerUpdate',jwtverify,upload.single("profileBanner"),trainerProfileBannerUpdate) // update banner of profile
 route.put('/trainerSkillsUpdate',jwtverify,trainerSkillsUpdate)

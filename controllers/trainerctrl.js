@@ -75,32 +75,32 @@ const trainerBasicInfoUpdate = async (req, resp) => {
     console.log(req.body)
 
     try {
-        // let profileImgUrl;
-        // if (req.files['profileImg']) {
-        //     const profileImg = req.files['profileImg'][0];
-        //     const params = {
-        //         Bucket: 'sisso-data',
-        //         Key: `profile/${_id}/${profileImg.originalname}`,
-        //         Body: profileImg.buffer,
-        //         ContentType: profileImg.mimetype
-        //     };
-        //     const data = await s3.upload(params).promise();
-        //     profileImgUrl = data.Location;
-        // }
+        let profileImgUrl;
+        if (req.files['profileImg']) {
+            const profileImg = req.files['profileImg'][0];
+            const params = {
+                Bucket: 'sisso-data',
+                Key: `profile/${_id}/${profileImg.originalname}`,
+                Body: profileImg.buffer,
+                ContentType: profileImg.mimetype
+            };
+            const data = await s3.upload(params).promise();
+            profileImgUrl = data.Location;
+        }
 
         // Upload profile banner to S3
-        // let profileBannerUrl;
-        // if (req.files['profileBanner']) {
-        //     const profileBanner = req.files['profileBanner'][0];
-        //     const params = {
-        //         Bucket: 'sisso-data',
-        //         Key: `profile/${_id}/${profileBanner.originalname}`,
-        //         Body: profileBanner.buffer,
-        //         ContentType: profileBanner.mimetype
-        //     };
-        //     const data = await s3.upload(params).promise();
-        //     profileBannerUrl = data.Location;
-        // }
+        let profileBannerUrl;
+        if (req.files['profileBanner']) {
+            const profileBanner = req.files['profileBanner'][0];
+            const params = {
+                Bucket: 'sisso-data',
+                Key: `profile/${_id}/${profileBanner.originalname}`,
+                Body: profileBanner.buffer,
+                ContentType: profileBanner.mimetype
+            };
+            const data = await s3.upload(params).promise();
+            profileBannerUrl = data.Location;
+        }
 
         if (req.user) {
             if (Object.keys(req.body).length > 0) {
@@ -115,8 +115,8 @@ const trainerBasicInfoUpdate = async (req, resp) => {
                         'basicInfo.location': req.body.location,
                         'basicInfo.objective': req.body.objective,
                         'basicInfo.aboutYou': req.body.aboutYou,
-                        // 'basicInfo.profileImg': profileImgUrl,
-                        // 'basicInfo.profileBanner': profileBannerUrl,
+                        'basicInfo.profileImg': profileImgUrl,
+                        'basicInfo.profileBanner': profileBannerUrl,
                         'basicInfo.status': req.body.status,
                     }
                 }, { new: true }
