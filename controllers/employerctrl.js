@@ -150,7 +150,7 @@ const employerProfileImageUpdate = async (req, resp) => {
             const profileImg = req.file;
             const params = {
                 Bucket: 'sisso-data',
-                Key: `profile/${_id}/${profileImg.originalname}`,
+                Key: `employer/profile/${_id}/${profileImg.originalname}`,
                 Body: profileImg.buffer,
                 ContentType: profileImg.mimetype
             };
@@ -187,7 +187,7 @@ const employerProfileBannerUpdate = async (req, resp) => {
             const profileBannerImg = req.file;
             const params = {
                 Bucket: 'sisso-data',
-                Key: `profile/${_id}/${profileBannerImg.originalname}`,
+                Key: `employer/profile/${_id}/${profileBannerImg.originalname}`,
                 Body: profileBannerImg.buffer,
                 ContentType: profileBannerImg.mimetype
             };

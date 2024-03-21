@@ -150,7 +150,7 @@ const trainerProfileImageUpdate = async (req, resp) => {
             const params = {
                 Bucket: 'sisso-data',
                 region: "ap-south-1",
-                Key: `profile/${_id}/${profileImg.originalname}`,
+                Key: `trainer/profile/${_id}/${profileImg.originalname}`,
                 Body: profileImg.buffer,
                 ContentType: profileImg.mimetype,
             };
@@ -189,7 +189,7 @@ const trainerProfileBannerUpdate = async (req, resp) => {
             const params = {
                 Bucket: 'sisso-data',
                 region: "ap-south-1",
-                Key: `profile/${_id}/${profileBannerImg.originalname}`,
+                Key: `trainer/profile/${_id}/${profileBannerImg.originalname}`,
                 Body: profileBannerImg.buffer,
                 ContentType: profileBannerImg.mimetype
             };
@@ -284,7 +284,7 @@ const trainerCertificateUpdate = async (req, resp) => {
                 const certificate = certificates[i];
                 const params = {
                     Bucket: 'sisso-data',
-                    Key: `certificates/${_id}/${certificate.originalname}`,
+                    Key: `trainer/certificates/${_id}/${certificate.originalname}`,
                     Body: certificate.buffer,
                     ContentType: certificate.mimetype
                 };
@@ -519,13 +519,13 @@ const trainerAppliedTraining = async (req, resp) => {
         const { trainingPostId } = req.params;
         const { trainingDetails } = req.body;
 
-        const ctrainerAvailableDate1 = new Date(trainingDetails.trainerAvailableDate1)
-        const ctrainerAvailableDate2 = new Date(trainingDetails.trainerAvailableDate2)
-        const ctrainerAvailableDate3 = new Date(trainingDetails.trainerAvailableDate3)
+        // const ctrainerAvailableDate1 = new Date(trainingDetails.trainerAvailableDate1)
+        // const ctrainerAvailableDate2 = new Date(trainingDetails.trainerAvailableDate2)
+        // const ctrainerAvailableDate3 = new Date(trainingDetails.trainerAvailableDate3)
 
-        const onlyDate1 = ctrainerAvailableDate1.toISOString().slice(0, 10)
-        const onlyDate2 = ctrainerAvailableDate2.toISOString().slice(0, 10)
-        const onlyDate3 = ctrainerAvailableDate3.toISOString().slice(0, 10)
+        // const onlyDate1 = ctrainerAvailableDate1.toISOString().slice(0, 10)
+        // const onlyDate2 = ctrainerAvailableDate2.toISOString().slice(0, 10)
+        // const onlyDate3 = ctrainerAvailableDate3.toISOString().slice(0, 10)
 
         // Check if the trainer has already applied for this training
         const existingApplication = await trainerAppliedTrainingSchema.findOne({
@@ -556,9 +556,9 @@ const trainerAppliedTraining = async (req, resp) => {
                     trainingDetails: [
                         {
                             trainingPostDetails: trainingDetails?.trainingPostDetails,
-                            trainerAvailableDate1: onlyDate1,
-                            trainerAvailableDate2: onlyDate2,
-                            trainerAvailableDate3: onlyDate3,
+                            // trainerAvailableDate1: onlyDate1,
+                            // trainerAvailableDate2: onlyDate2,
+                            // trainerAvailableDate3: onlyDate3,
                         }
                     ]
                 });
