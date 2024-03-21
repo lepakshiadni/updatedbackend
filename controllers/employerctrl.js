@@ -2,8 +2,8 @@
 const employerSchema = require("../models/employermodel.js");
 const { generateToken } = require("../config/jwttoken.js");
 const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmodel.js');
-const bookmarkedEmployerSchema=require('../models/bookmarkedEmployerPostmodel.js')
-const SkillSchema=require('../models/skillmodel.js')
+const bookmarkedEmployerSchema = require('../models/bookmarkedEmployerPostmodel.js')
+const SkillSchema = require('../models/skillmodel.js')
 
 
 const aws = require("aws-sdk");
@@ -110,8 +110,8 @@ const employerBasicInfoUpdate = async (req, resp) => {
 
         // }
         console.log(req.body.firstName)
-        
-        if (req.user && req.body) {  
+
+        if (req.user && req.body) {
             const employerDetails = await employerSchema.findByIdAndUpdate({ _id }, {
                 $set: {
                     'basicInfo.firstName': req.body.firstName,
@@ -251,7 +251,7 @@ const employerContactInfoUpdate = async (req, resp) => {
         }
         const employerDetails = await employerSchema.findOneAndUpdate({ _id }, {
             $set: {
-                'contactInfo.primaryNumber': primaryNumber ,
+                'contactInfo.primaryNumber': primaryNumber,
                 'contactInfo.secondaryNumber': secondaryNumber,
                 'contactInfo.address': address || 'Not Available',
                 'contactInfo.email': email || 'Not Provided',
@@ -323,31 +323,31 @@ const employerExperienceInfoDelete = async (req, resp) => {
 const getSkills = async (req, resp) => {
     try {
         const skills = await SkillSchema.find()
- 
+
         if (!skills) {
             resp.status(200).json({ success: false, message: "No Data Found" })
- 
+
         } else {
             resp.status(201).json({ success: true, message: 'getting skills', skills })
         }
     } catch (error) {
         console.log(error)
- 
+
     }
 }
 
 const getemployerProfile = async (req, resp) => {
     const employerDetails = await req.user;
     // console.log("User details", employerDetails)
-    if (employerDetails) {
-        resp.status(201).json({ success: true, message: 'employerProfileFected', employerDetails })
-    } else {
-        resp
-            .status(403)
-            .json({
-                sucess: false,
-                message: "You are not authorized to access this api",
-            });
+    try {
+        if (employerDetails) {
+            resp.status(201).json({ success: true, message: 'employerProfileFected', employerDetails })
+        } else {
+            resp.status(200).json({sucess: false,message: "You are not authorized to access this api",});
+        }
+    }
+    catch (error) {
+        resp.status(200).json({success:false,message:'Internal Server Error',error})
     }
 };
 
@@ -381,7 +381,7 @@ const getAppliedTrainingEmployer = async (req, resp) => {
 const updateProfileVisibility = async (req, res) => {
     const { _id } = req.user;
     const { profileVisibility } = req.body;
-    
+
     // try {
     //     const updatedProfile = await Employer.findByIdAndUpdate(
     //         _id,
