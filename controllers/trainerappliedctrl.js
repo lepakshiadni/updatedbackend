@@ -1,4 +1,5 @@
 const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmodel.js');
+const trainerSchema=require('../models/trainermodel.js')
 const mongoose = require('mongoose');
 
 
@@ -67,6 +68,10 @@ const updateAppliedStatus = async (req, resp) => {
 };
 
 
+const updateFeedBackTrainer=async(trainerId,rating,feedBack)=>{
+    const findTrainer=await trainerSchema.findById({_id:trainerId})
+    
+}
 const addFeedback = async (req, res) => {
     const { _id } = req.user;
     console.log(req.user)
