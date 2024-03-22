@@ -26,5 +26,6 @@ const ConversationSchema = mongoose.Schema(
 
 // Adding an index to the members field
 ConversationSchema.index({ members: 1 });
+ConversationSchema.index({ 'lastMessage.createdAt': -1 })
 
 module.exports = mongoose.model("Conversation", ConversationSchema)

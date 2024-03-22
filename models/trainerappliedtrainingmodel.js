@@ -36,21 +36,21 @@ const trainerAppliedTraining = new mongoose.Schema({
             trainingPostDetails: {
                 type: Object
             },
-            trainerAvailableDate1: {
-                type: String,
-                default: ''
-            },
-            trainerAvailableDate2: {
-                type: String,
-                default:''
-            },
-            trainerAvailableDate3: {
-                type: String,
-                default:''
-            },
-            trainerModeOfTraining: {
-                type: String
-            },
+            // trainerAvailableDate1: {
+            //     type: String,
+            //     default: ''
+            // },
+            // trainerAvailableDate2: {
+            //     type: String,
+            //     default:''
+            // },
+            // trainerAvailableDate3: {
+            //     type: String,
+            //     default:''
+            // },
+            // trainerModeOfTraining: {
+            //     type: String
+            // },
             trainingResources: [
                 {
                     fileName: {

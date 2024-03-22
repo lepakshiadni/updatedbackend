@@ -200,6 +200,7 @@ const trainerSchema = new mongoose.Schema(
             {
                 trainingName: String,
                 value: Number,  // from 1 to 5
+                feedBack:String,
             }
         ],
         notification: {

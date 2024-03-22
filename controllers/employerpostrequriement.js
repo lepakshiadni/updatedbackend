@@ -92,7 +92,7 @@ const postTrainingRequirementComments = async (req, resp) => {
     }
     catch (error) {
         console.log(error)
-        resp.status(500).json({ sucess: false, message: "Server Error" })
+        resp.status(500).json({ sucess: false, message: "Server Error", error })
     }
 
 }
@@ -296,6 +296,7 @@ const getAllPostTrainingRequirement = async (req, resp) => {
 const hidePost = async (req, resp) => {
     const { hideBy } = req.body;
     const { postId } = req.params;
+    console.log(req.body)
 
     try {
         const findTrainingPost = await postTrainingRequirementSchema.findById(postId);

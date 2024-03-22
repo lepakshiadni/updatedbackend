@@ -19,11 +19,11 @@ const trainerPost=require('./route/trainercreatepostroute')
 
 
 // Increase payload size limit (adjust the limit as needed)
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '100mb' }));
 app.use(bodyparser.json())
 // app.use(express.urlencoded({ limit: '50mb', extended: true , parameterLimit: 10000 }));
 app.use(express.urlencoded({
-    limit:'90mb',
+    limit:'100mb',
     parameterLimit: 10000,
     extended:true
 }))

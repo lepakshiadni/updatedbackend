@@ -16,10 +16,7 @@ const newConversation = async (req, resp) => {
         console.log(sender)
         console.log(receiver)
         if (!sender || !receiver) {
-            return resp.status(404).json({
-                success: false,
-                message: 'Sender or receiver not found.',
-            });
+            return resp.status(404).json({success: false,message: 'Sender or receiver not found.'});
         }
 
         // Check if a conversation already exists between sender and receiver
@@ -64,10 +61,10 @@ const getAllConversation = async (req, resp) => {
     const allConversation = await ConversationSchema.find()
     console.log(allConversation)
     try {
-        resp.status(200).json(allConversation)
+        resp.status(201).json(allConversation)
     }
     catch {
-        resp.status(404).json({ message: 'sever error' })
+        resp.status(200).json({ message: 'sever error' })
     }
 }
 

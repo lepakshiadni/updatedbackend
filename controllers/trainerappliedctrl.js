@@ -1,4 +1,5 @@
 const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmodel.js');
+const trainerSchema=require('../models/trainermodel.js')
 const mongoose = require('mongoose');
 
 
@@ -8,7 +9,7 @@ const getAllAppliedTraining = async (req, res) => {
 
         // Filter out trainingDetails with appliedStatus set to false
         const filteredTrainingDetails = allAppliedTrainingDetails.map((document) => {
-            const filteredDetails = document.trainingDetails.filter((detail) => {
+            const filteredDetails = document?.trainingDetails?.filter((detail) => {
                 return detail.appliedStatus === false && detail.applicationstatus !== 'Denied';
             });
 
@@ -30,7 +31,7 @@ const getAllAppliedTraining = async (req, res) => {
         }
     } catch (error) {
         console.error('Error while fetching applied training details:', error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: 'Internal Server Error', error });
     }
 };
 
@@ -67,6 +68,10 @@ const updateAppliedStatus = async (req, resp) => {
 };
 
 
+const updateFeedBackTrainer=async(trainerId,rating,feedBack)=>{
+    const findTrainer=await trainerSchema.findById({_id:trainerId})
+    
+}
 const addFeedback = async (req, res) => {
     const { _id } = req.user;
     console.log(req.user)

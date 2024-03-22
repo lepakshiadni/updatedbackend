@@ -30,4 +30,5 @@ const MessageSchema = mongoose.Schema(
 // Example: Adding indexes to conversationId and sender
 MessageSchema.index({ conversationId: 1 });
 MessageSchema.index({ sender: 1 });
+MessageSchema.index({text:1}); // Sort by date descending
 module.exports = mongoose.model("Message", MessageSchema)

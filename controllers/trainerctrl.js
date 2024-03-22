@@ -75,32 +75,32 @@ const trainerBasicInfoUpdate = async (req, resp) => {
     console.log(req.body)
 
     try {
-        // let profileImgUrl;
-        // if (req.files['profileImg']) {
-        //     const profileImg = req.files['profileImg'][0];
-        //     const params = {
-        //         Bucket: 'sisso-data',
-        //         Key: `profile/${_id}/${profileImg.originalname}`,
-        //         Body: profileImg.buffer,
-        //         ContentType: profileImg.mimetype
-        //     };
-        //     const data = await s3.upload(params).promise();
-        //     profileImgUrl = data.Location;
-        // }
+        let profileImgUrl;
+        if (req.files['profileImg']) {
+            const profileImg = req.files['profileImg'][0];
+            const params = {
+                Bucket: 'sisso-data',
+                Key: `profile/${_id}/${profileImg.originalname}`,
+                Body: profileImg.buffer,
+                ContentType: profileImg.mimetype
+            };
+            const data = await s3.upload(params).promise();
+            profileImgUrl = data.Location;
+        }
 
         // Upload profile banner to S3
-        // let profileBannerUrl;
-        // if (req.files['profileBanner']) {
-        //     const profileBanner = req.files['profileBanner'][0];
-        //     const params = {
-        //         Bucket: 'sisso-data',
-        //         Key: `profile/${_id}/${profileBanner.originalname}`,
-        //         Body: profileBanner.buffer,
-        //         ContentType: profileBanner.mimetype
-        //     };
-        //     const data = await s3.upload(params).promise();
-        //     profileBannerUrl = data.Location;
-        // }
+        let profileBannerUrl;
+        if (req.files['profileBanner']) {
+            const profileBanner = req.files['profileBanner'][0];
+            const params = {
+                Bucket: 'sisso-data',
+                Key: `profile/${_id}/${profileBanner.originalname}`,
+                Body: profileBanner.buffer,
+                ContentType: profileBanner.mimetype
+            };
+            const data = await s3.upload(params).promise();
+            profileBannerUrl = data.Location;
+        }
 
         if (req.user) {
             if (Object.keys(req.body).length > 0) {
@@ -115,9 +115,10 @@ const trainerBasicInfoUpdate = async (req, resp) => {
                         'basicInfo.location': req.body.location,
                         'basicInfo.objective': req.body.objective,
                         'basicInfo.aboutYou': req.body.aboutYou,
-                        // 'basicInfo.profileImg': profileImgUrl,
-                        // 'basicInfo.profileBanner': profileBannerUrl,
+                        'basicInfo.profileImg': profileImgUrl,
+                        'basicInfo.profileBanner': profileBannerUrl,
                         'basicInfo.status': req.body.status,
+                        fullName: `${req.body.firstName} ${req.body.lastName}`
                     }
                 }, { new: true }
                 )
@@ -146,12 +147,15 @@ const trainerProfileImageUpdate = async (req, resp) => {
         let profileImgUrl;
         if (req.file) {
             const profileImg = req.file;
+
             const params = {
                 Bucket: 'sisso-data',
-                Key: `profile/${_id}/${profileImg.originalname}`,
+                region: "ap-south-1",
+                Key: `trainer/profile/${_id}/${profileImg.originalname}`,
                 Body: profileImg.buffer,
-                ContentType: profileImg.mimetype
+                ContentType: profileImg.mimetype,
             };
+
             const data = await s3.upload(params).promise();
             profileImgUrl = data.Location;
         }
@@ -185,7 +189,8 @@ const trainerProfileBannerUpdate = async (req, resp) => {
             const profileBannerImg = req.file;
             const params = {
                 Bucket: 'sisso-data',
-                Key: `profile/${_id}/${profileBannerImg.originalname}`,
+                region: "ap-south-1",
+                Key: `trainer/profile/${_id}/${profileBannerImg.originalname}`,
                 Body: profileBannerImg.buffer,
                 ContentType: profileBannerImg.mimetype
             };
@@ -280,7 +285,7 @@ const trainerCertificateUpdate = async (req, resp) => {
                 const certificate = certificates[i];
                 const params = {
                     Bucket: 'sisso-data',
-                    Key: `certificates/${_id}/${certificate.originalname}`,
+                    Key: `trainer/certificates/${_id}/${certificate.originalname}`,
                     Body: certificate.buffer,
                     ContentType: certificate.mimetype
                 };
@@ -515,13 +520,13 @@ const trainerAppliedTraining = async (req, resp) => {
         const { trainingPostId } = req.params;
         const { trainingDetails } = req.body;
 
-        const ctrainerAvailableDate1 = new Date(trainingDetails.trainerAvailableDate1)
-        const ctrainerAvailableDate2 = new Date(trainingDetails.trainerAvailableDate2)
-        const ctrainerAvailableDate3 = new Date(trainingDetails.trainerAvailableDate3)
+        // const ctrainerAvailableDate1 = new Date(trainingDetails.trainerAvailableDate1)
+        // const ctrainerAvailableDate2 = new Date(trainingDetails.trainerAvailableDate2)
+        // const ctrainerAvailableDate3 = new Date(trainingDetails.trainerAvailableDate3)
 
-        const onlyDate1 = ctrainerAvailableDate1.toISOString().slice(0, 10)
-        const onlyDate2 = ctrainerAvailableDate2.toISOString().slice(0, 10)
-        const onlyDate3 = ctrainerAvailableDate3.toISOString().slice(0, 10)
+        // const onlyDate1 = ctrainerAvailableDate1.toISOString().slice(0, 10)
+        // const onlyDate2 = ctrainerAvailableDate2.toISOString().slice(0, 10)
+        // const onlyDate3 = ctrainerAvailableDate3.toISOString().slice(0, 10)
 
         // Check if the trainer has already applied for this training
         const existingApplication = await trainerAppliedTrainingSchema.findOne({
@@ -552,9 +557,9 @@ const trainerAppliedTraining = async (req, resp) => {
                     trainingDetails: [
                         {
                             trainingPostDetails: trainingDetails?.trainingPostDetails,
-                            trainerAvailableDate1: onlyDate1,
-                            trainerAvailableDate2: onlyDate2,
-                            trainerAvailableDate3: onlyDate3,
+                            // trainerAvailableDate1: onlyDate1,
+                            // trainerAvailableDate2: onlyDate2,
+                            // trainerAvailableDate3: onlyDate3,
                         }
                     ]
                 });

@@ -138,6 +138,7 @@ function addTrainingData (trainingDetails) {
     // })
 
 
+
 }
 
 const updateRequestStatus = async (req, resp) => {
