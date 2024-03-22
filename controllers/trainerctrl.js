@@ -118,6 +118,7 @@ const trainerBasicInfoUpdate = async (req, resp) => {
                         'basicInfo.profileImg': profileImgUrl,
                         'basicInfo.profileBanner': profileBannerUrl,
                         'basicInfo.status': req.body.status,
+                        fullName: `${req.body.firstName} ${req.body.lastName}`
                     }
                 }, { new: true }
                 )
