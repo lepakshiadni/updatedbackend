@@ -33,8 +33,8 @@ const generateOtp = () => {
 }
 
 const compareOtp = async (otp, number) => {
+    console.log(otp,number)
     const finduser = await otpSchema.findOne({ phoneNumber: number })
-    // console.log(otp,number)
     if (!finduser) {
         console.log('user Not fount')
     }

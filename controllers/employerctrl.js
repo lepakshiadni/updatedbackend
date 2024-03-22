@@ -2,8 +2,9 @@
 const employerSchema = require("../models/employermodel.js");
 const { generateToken } = require("../config/jwttoken.js");
 const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmodel.js');
-const bookmarkedEmployerSchema=require('../models/bookmarkedEmployerPostmodel.js')
-const SkillSchema=require('../models/skillmodel.js')
+const bookmarkedEmployerSchema = require('../models/bookmarkedEmployerPostmodel.js')
+const SkillSchema = require('../models/skillmodel.js')
+const {compareOtp}=require('../utils/services.js')
 
 
 const aws = require("aws-sdk");
@@ -110,8 +111,8 @@ const employerBasicInfoUpdate = async (req, resp) => {
 
         // }
         console.log(req.body.firstName)
-        
-        if (req.user && req.body) {  
+
+        if (req.user && req.body) {
             const employerDetails = await employerSchema.findByIdAndUpdate({ _id }, {
                 $set: {
                     'basicInfo.firstName': req.body.firstName,
@@ -251,7 +252,7 @@ const employerContactInfoUpdate = async (req, resp) => {
         }
         const employerDetails = await employerSchema.findOneAndUpdate({ _id }, {
             $set: {
-                'contactInfo.primaryNumber': primaryNumber ,
+                'contactInfo.primaryNumber': primaryNumber,
                 'contactInfo.secondaryNumber': secondaryNumber,
                 'contactInfo.address': address || 'Not Available',
                 'contactInfo.email': email || 'Not Provided',
@@ -323,16 +324,16 @@ const employerExperienceInfoDelete = async (req, resp) => {
 const getSkills = async (req, resp) => {
     try {
         const skills = await SkillSchema.find()
- 
+
         if (!skills) {
             resp.status(200).json({ success: false, message: "No Data Found" })
- 
+
         } else {
             resp.status(201).json({ success: true, message: 'getting skills', skills })
         }
     } catch (error) {
         console.log(error)
- 
+
     }
 }
 
@@ -381,7 +382,7 @@ const getAppliedTrainingEmployer = async (req, resp) => {
 const updateProfileVisibility = async (req, res) => {
     const { _id } = req.user;
     const { profileVisibility } = req.body;
-    
+
     // try {
     //     const updatedProfile = await Employer.findByIdAndUpdate(
     //         _id,
@@ -483,6 +484,51 @@ const getBookMarkedPostsByUserId = async (req, resp) => {
     }
 };
 
+const UpdatePhoneNumber = async (req, resp) => {
+    const {
+        phoneNumber,
+        otp
+    } = req.body 
+    console.log('req.body',req.body); 
+    const { _id } = req.user
+
+    try {
+        if(req.user){
+            const valid =await compareOtp(otp,phoneNumber)
+            if(valid){
+                const findUser=await employerSchema.findOne({'contactInfo.primaryNumber': req.user.contactInfo.primaryNumber,})
+                if(!findUser){
+                    resp.status(200).json({success:false,message:'User Details Not Found '})
+                }
+                else{
+                    const employerDetails = await employerSchema.findOneAndUpdate({ _id }, {
+                        $set: {
+                            'contactInfo.primaryNumber': phoneNumber,
+                        }   
+                    },{new:true})
+                    if(employerDetails){
+                        await employerDetails.save()
+                        resp.status(201).json({success:true,message:'Employer PhoneNumber Updated SuccessFully',employerDetails})
+                    }
+                    else{
+                        resp.status(200).json({success:false,message:'Error Updating Number'})
+                    }
+                }
+            }
+            else{
+                resp.status(200).json({success:false,message:'Invalid Otp'})
+
+            }
+
+        }
+    }
+    catch (error) {
+        console.log(error)
+        resp.status(200).json({ message: error.toString() })
+    }
+
+
+}
 
 module.exports = {
     employerSignUp,
@@ -498,5 +544,6 @@ module.exports = {
     getAppliedTrainingEmployer,
     updateProfileVisibility,
     addBookMarkedPost,
-    getBookMarkedPostsByUserId
+    getBookMarkedPostsByUserId,
+    UpdatePhoneNumber
 };

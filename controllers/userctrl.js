@@ -12,6 +12,7 @@ const Cookies = require('js-cookie')
 
 const generateopt = async (req, resp) => {
     const { number } = req.body
+    console.log(number);
     if (number) {
         try {
             let user = await otpSchema.findOne({ phoneNumber: number })
@@ -34,9 +35,6 @@ const generateopt = async (req, resp) => {
     }
 
 }
-
-
-//
 
 //Verify opt api 
 
@@ -110,7 +108,6 @@ const verifyOtp = async (req, resp) => {
                 return resp.status(404).json({ success: false, message: 'Invalid OTP' });
             }
         }
-        
 
         if (existEmployer && findUser) {
             const valid = await compareOtp(otp, phoneNumber);// validating  the otp from the otp Schema 
@@ -138,9 +135,6 @@ const verifyOtp = async (req, resp) => {
         return resp.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
-
-
-
 
 
 //update user profile 
@@ -209,8 +203,6 @@ const getuser = async (req, resp) => {
     else {
         resp.json({ sucess: false, message: 'not found' })
     }
-
-
 }
 
 
