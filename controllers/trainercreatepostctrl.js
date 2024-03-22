@@ -44,9 +44,9 @@ const trainerCreatePost = async (req, resp) => {
         // }
         if(Object.keys(req.body).length > 0){
 
-            const createPost = new trainerCreatePostSchema({
+            const trainercreatePost = new trainerCreatePostSchema({
                 postedById: _id,
-                postedByName: `${req.user?.basicInfo?.firstName} ${req.user?.basicInfo?.lastName}`,
+                postedByName: `${req.user?.basicInfo?.firstName} ${req.user?.basicInfo?.lastName}` || `${req.user?.fullName}`,
                 postedByDesignation: `${req.user?.basicInfo?.designation}`,
                 postedByImg: req.user?.basicInfo?.profileImg || '',
                 postedByCompany: `${req.user?.basicInfo?.company}`,
@@ -55,9 +55,9 @@ const trainerCreatePost = async (req, resp) => {
                 postedDescrition: req.body.postDescription,
                 postedImg: postedImg
             })
-            console.log(createPost)
-            createPost.save()
-            resp.status(201).json({ success: true, message: "Your Post has been created Successfully!", createPost });
+            console.log(trainercreatePost)
+            trainercreatePost.save()
+            resp.status(201).json({ success: true, message: "Your Post has been created Successfully!", trainercreatePost });
         }
         else{
             resp.status(200).json({success:false ,message:"No Data Provided"})
