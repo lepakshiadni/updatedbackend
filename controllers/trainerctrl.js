@@ -5,7 +5,8 @@ const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmo
 const trainerCreatePostSchema = require('../models/trainerCreatePostmodel.js')
 const SkillSchema = require('../models/skillmodel.js')
 const { generateToken } = require('../config/jwttoken.js')
-const { generateS3UploadParams } = require('../utils/uploads3.js')
+const { generateS3UploadParams } = require('../utils/uploads3.js');
+const { compareOtp } = require('../utils/services.js');
 require('dotenv').config()
 
 
@@ -67,7 +68,6 @@ const trainerSignUp = async (req, resp) => {
         resp.status(401).json({ success: false, message: 'Entered user already exists. Please log in.' });
     }
 };
-
 
 
 const trainerBasicInfoUpdate = async (req, resp) => {
@@ -744,6 +744,53 @@ const getTrainerDetailsById = async (req, resp) => {
 
 }
 
+const UpdatePhoneNumber = async (req, resp) => {
+    const {
+        phoneNumber,
+        otp
+    } = req.body 
+    console.log('req.body',req.body); 
+    const { _id } = req.user
+
+    try {
+        if(req.user){
+            const valid =await compareOtp(otp,phoneNumber)
+            if(valid){
+                const findUser=await trainerSchema.findOne({'contactInfo.primaryNumber': req.user.contactInfo.primaryNumber,})
+                if(!findUser){
+                    resp.status(200).json({success:false,message:'User Details Not Found '})
+                }
+                else{
+                    const trainerDetails = await trainerSchema.findOneAndUpdate({ _id }, {
+                        $set: {
+                            'contactInfo.primaryNumber': phoneNumber,
+                        }   
+                    },{new:true})
+                    if(trainerDetails){
+                        await trainerDetails.save()
+                        resp.status(201).json({success:true,message:'Trainer PhoneNumber Updated SuccessFully',trainerDetails})
+                    }
+                    else{
+                        resp.status(200).json({success:false,message:'Error Updating Number'})
+                    }
+                }
+            }
+            else{
+                resp.status(200).json({success:false,message:'Invalid Otp'})
+
+            }
+
+        }
+    }
+    catch (error) {
+        console.log(error)
+        resp.status(200).json({ message: error.toString() })
+    }
+
+
+}
+
+
 module.exports = {
     trainerSignUp, gettrainerProfile, trainerBasicInfoUpdate, updateSkillRangeById,
     trainerSkillsUpdate, trainerCertificateUpdate, trainerContactInfoUpdate, trainerProfileBannerUpdate,
@@ -751,5 +798,5 @@ module.exports = {
     addBookMarkedPost, getBookMarkedPostsByUserId, trainerProfileImageUpdate,
     trainerAppliedTraining, getAppliedTraining, deleteAppliedTraining, addTrainingResources,
     testProfileApi,
-    getAllTrainerDetails
+    getAllTrainerDetails,UpdatePhoneNumber
 }

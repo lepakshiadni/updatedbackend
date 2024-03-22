@@ -5,7 +5,8 @@ const {
     addBookMarkedPost,getBookMarkedPostsByUserId,trainerCertificateDelete,getTrainerDetailsById,getSkills,
     trainerAppliedTraining,getAppliedTraining,deleteAppliedTraining,addTrainingResources,
     testProfileApi,
-    getAllTrainerDetails
+    getAllTrainerDetails,
+    UpdatePhoneNumber
 } = require('../controllers/trainerctrl')
 
 const {updateRequestStatus,getAllRequestTrainer}=require('../controllers/employerTrainingRequestctrl')
@@ -30,6 +31,7 @@ route.get('/gettrainerProfile', jwtverify, gettrainerProfile) // to view the pro
 route.get('/getTrainerDetailsById/:id', getTrainerDetailsById)   // get the trainer details by id
 route.delete('/trainerCertificateDelete/:id',jwtverify,trainerCertificateDelete) // to delete the ceriticate 
 route.get('/skills', getSkills)
+route.put('/phoneNumberUpdate', jwtverify, UpdatePhoneNumber)
 
 route.post('/addBookMarkePost/:postId', jwtverify, addBookMarkedPost)   // to bookmark a post by trainer
 route.post('/trainerAppliedTraining/:trainingPostId', jwtverify, trainerAppliedTraining)
