@@ -158,23 +158,23 @@ const deleteTrainerPostComment = async (req, resp) => {
 
 
 // get the post training comments 
-const getTrainierPostComments = async (req, res) => {
+const getTrainierPostComments = async (req, resp) => {
     const { postId } = req.params
     const findTrainerPostComments = await trainerCreatePostSchema.findOne({ _id: postId })
 
     try {
         if (!findTrainerPostComments) {
-            return res.status(200).json({ success: false, msg: "No Comments found" });
+            return resp.status(200).json({ success: false, msg: "No Comments found" });
         }
         else {
             await findTrainerPostComments.comments.sort((a, b) => b.createdAt - a.createdAt);
             const trainercreatePost = await trainerCreatePostSchema.find().sort({ createdAt: -1 })
-            res.status(201).json({ success: true, message: 'Getting all comments', trainercreatePost });
+            resp.status(201).json({ success: true, message: 'Getting all comments', trainercreatePost });
         }
     }
     catch (error) {
         console.log(error)
-        res.status(500).json({ success: false, message: "server error" });
+        resp.status(500).json({ success: false, message: "server error" });
     }
 
 }

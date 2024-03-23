@@ -223,48 +223,144 @@ const URI = process.env.DB
 //     {
 //         "name": "Microsoft Azure",
 //         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709290071/zorejocxissu8zfyvlnu.png"
+//     },
+//     {
+//         "name": "VMware",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709615899/rtswhdnf24bnfcabvtbf.png"
+//     },
+//     {
+//         "name": "Citrix",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709615933/hl2hu8ssfxyxugjlg1cy.png"
+//     },
+//     {
+//         "name": "AWS cloud practitioner",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709616090/fhgx4qcofwulrktnxo5p.png"
+//     },
+//     {
+//         "name": "Networking Fundamentals",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709616194/zpjkhve1hurf3xkn3ovm.png"
+//     },
+//     {
+//         "name": "AZ-104 Microsoft Azure Administartor",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709616518/venzj0gz2mp7wbf4owrj.png"
+//     },
+//     {
+//         "name": "AZ-900 Microsoft Azure Fundamental",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709616693/ijipewfxpquieo8hrhut.png"
+//     },
+//     {
+//         "name": "Commvault",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709616737/tchuhlva4hcbo1pivd0k.png"
+//     },
+//     {
+//         "name": "Veem Certified Engineer",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709616789/l7iwr4hznnfrdte2awdg.png"
+//     },
+//     {
+//         "name": "Google Cloud Platform",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709616852/suy1lyoz3n3v2mofjgzk.png"
+//     },
+//     {
+//         "name": "kubernetes",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709616943/acvbft8lvs5z83motl9b.png"
+//     },
+//     {
+//         "name": "Rhino 7",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709617027/qbjv0qdiyyaivwadvksw.png"
+//     },
+//     {
+//         "name": "Enscape for Rhino 7",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709617091/xacabwqvc46kxkaesiwj.png"
+//     },
+//     {
+//         "name": "Lumion 3D",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709617134/p2vsiukxjsbiz1t5xdac.png"
+//     },
+//     {
+//         "name": "Twinmotion",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709617196/pswpem7jy7juxwf5vxib.png"
+//     },
+//     {
+//         "name": "Keyshot",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709617226/qdi85jzxhunwdmdabswc.png"
+//     },
+//     {
+//         "name": "Unreal Engine",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709617271/cb7w9jqyocbaeq97rgae.png"
+//     },
+//     {
+//         "name": "Blender",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709617657/rlhodu18ch5ny6swt8m5.png"
+//     },
+//     {
+//         "name": "Bluebeam",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709617712/qj3ilznuxgs0crgx3syp.png"
+//     },
+//     {
+//         "name": "Agile Methodology",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709617954/krw0tdgiirwu7rzrxels.png"
+//     },
+//     {
+//         "name": "Unix",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709618086/h4jdtprns6ipx1zazoqc.png"
+//     },
+//     {
+//         "name": "RPA and Analytics",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709618281/s2v4i3gkdy83lzfxw2yw.png"
+//     },
+//     {
+//         "name": "Service Now and ITIL",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709618469/pkzgu7atnvtiqpnarpog.png"
+//     },
+//     {
+//         "name": "OAC\n",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709618585/m5oemlr7tvrbhcvfqpac.png"
+//     },
+//     {
+//         "name": "APEX",
+//         "image": "http://res.cloudinary.com/dplyhp3s9/image/upload/v1709618641/pghwk6jspklwpld0bd3o.png"
 //     }
 // ]
-const data=[
+// const data=[
    
-        {
-            "City": "SGM",
-            "State": "Rajasthan",
-            "District": "Ganganagar"
-        },
-        {
-            "City": "STR",
-            "State": "Rajasthan",
-            "District": "Ganganagar"
-        },
-        {
-            "City": "A.Thirumuruganpoondi",
-            "State": "Tamil Nadu",
-            "District": "Coimbatore"
-        },
-        {
-            "City": "A.Vellalapatti",
-            "State": "Tamil Nadu",
-            "District": "Madurai"
-        },
+//         {
+//             "City": "SGM",
+//             "State": "Rajasthan",
+//             "District": "Ganganagar"
+//         },
+//         {
+//             "City": "STR",
+//             "State": "Rajasthan",
+//             "District": "Ganganagar"
+//         },
+//         {
+//             "City": "A.Thirumuruganpoondi",
+//             "State": "Tamil Nadu",
+//             "District": "Coimbatore"
+//         },
+//         {
+//             "City": "A.Vellalapatti",
+//             "State": "Tamil Nadu",
+//             "District": "Madurai"
+//         },
 
     
-]
+// ]
 mongoose.connect(URI)
     .then(() => {
         console.log(`Connected to MongoDB at`);
     })
 
 
-// const skillsSchema = new mongoose.Schema({
-//     name: {
-//         type: String,
-//     },
-//     image: {
-//         type: String,
-//     }
-// })
-// const skill = mongoose.model('Skills', skillsSchema)
+const skillsSchema = new mongoose.Schema({
+    name: {
+        type: String,
+    },
+    image: {
+        type: String,
+    }
+})
+const skill = mongoose.model('Skills', skillsSchema)
 
 // const citesSchema=new mongoose.Schema({
 
@@ -280,8 +376,9 @@ mongoose.connect(URI)
 
 // })
 
-const cites=module.exports=mongoose.model("Cites",citesSchema)
 
-// cites.insertMany(data)
+// const cites=module.exports=mongoose.model("Cites",citesSchema)
+
+// skill.insertMany(data)
 
 console.log('done intersation')

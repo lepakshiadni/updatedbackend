@@ -10,6 +10,7 @@ aws.config.update({
 })
 const s3 = new aws.S3();
 
+// trainer post creationn
 const postTrainingRequirement = async (req, resp) => {
     const { _id } = req.user;
     try {
