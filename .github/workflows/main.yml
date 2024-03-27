@@ -45,4 +45,4 @@ jobs:
      runs-on: self-hosted
      steps:
        - name: Watch Docker Logs
-         run: docker logs -f nodejs_backend-container
+         run: sudo docker logs -f nodejs_backend-container
