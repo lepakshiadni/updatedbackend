@@ -33,7 +33,7 @@ const testProfileApi = async (req, resp) => {
     // const profileImg=req.file
 
     // let url;
-    // const params=generateS3UploadParams('sisso-data',profileImg)
+    // const params=generateS3UploadParams(process.env.S3_BUCKET_NAME,profileImg)
     // const data=await s3.upload(params).promise()
     // url=data.Location
     // console.log(url)
@@ -76,11 +76,11 @@ const trainerBasicInfoUpdate = async (req, resp) => {
 
     try {
         let profileImgUrl;
-        if (req.files['profileImg']) {
+        if (req.file && req.files['profileImg']) {
             const profileImg = req.files['profileImg'][0];
             const params = {
-                Bucket: 'sisso-data',
-                Key: `profile/${_id}/${profileImg.originalname}`,
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: `trainer/profile/${_id}/${profileImg.originalname}`,
                 Body: profileImg.buffer,
                 ContentType: profileImg.mimetype
             };
@@ -90,11 +90,11 @@ const trainerBasicInfoUpdate = async (req, resp) => {
 
         // Upload profile banner to S3
         let profileBannerUrl;
-        if (req.files['profileBanner']) {
+        if (req.file && req.files['profileBanner']) {
             const profileBanner = req.files['profileBanner'][0];
             const params = {
-                Bucket: 'sisso-data',
-                Key: `profile/${_id}/${profileBanner.originalname}`,
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: `trainer/profile/${_id}/${profileBanner.originalname}`,
                 Body: profileBanner.buffer,
                 ContentType: profileBanner.mimetype
             };
@@ -102,7 +102,7 @@ const trainerBasicInfoUpdate = async (req, resp) => {
             profileBannerUrl = data.Location;
         }
 
-        if (req.user) {
+        if (req.body && req.user) {
             if (Object.keys(req.body).length > 0) {
 
                 const trainerDetails = await trainerSchema.findByIdAndUpdate({ _id }, {
@@ -126,8 +126,8 @@ const trainerBasicInfoUpdate = async (req, resp) => {
                 // console.log(trainerDetails);
                 resp.status(201).json({ success: true, message: 'Basic Info Updated Successfully', trainerDetails });
             }
-            else{
-                resp.status(200).json({success: false, message:"No request body found"})
+            else {
+                resp.status(200).json({ success: false, message: "No request body found" })
             }
         }
         else {
@@ -142,24 +142,33 @@ const trainerBasicInfoUpdate = async (req, resp) => {
 
 const trainerProfileImageUpdate = async (req, resp) => {
     const { _id } = req.user
-    console.log(req.file);
+    // console.log(req.file);
     try {
         let profileImgUrl;
-        if (req.file) {
-            const profileImg = req.file;
+        try {
 
-            const params = {
-                Bucket: 'sisso-data',
-                region: "ap-south-1",
-                Key: `trainer/profile/${_id}/${profileImg.originalname}`,
-                Body: profileImg.buffer,
-                ContentType: profileImg.mimetype,
-            };
-
-            const data = await s3.upload(params).promise();
-            profileImgUrl = data.Location;
+            if (req.file) {
+                const profileImg = req.file;
+                const params = {
+                    
+                    Bucket: process.env.S3_BUCKET_NAME,
+                    // region: process.env.S3_BUCKET_REGION,
+                    Key: `trainer/profile/${_id}/${profileImg.originalname}`,
+                    Body: profileImg.buffer,
+                    ContentType: profileImg.mimetype,
+                };
+    
+                const data = await s3.upload(params).promise();
+                // console.log(data)
+                profileImgUrl = data.Location;
+            }
+            // console.log(profileImgUrl);
         }
-        console.log(profileImgUrl);
+        catch (error) {
+            console.log(error)
+
+
+        }
         if (req.user) {
             const trainerDetails = await trainerSchema.findByIdAndUpdate({ _id }, {
                 $set: {
@@ -188,13 +197,14 @@ const trainerProfileBannerUpdate = async (req, resp) => {
         if (req.file) {
             const profileBannerImg = req.file;
             const params = {
-                Bucket: 'sisso-data',
-                region: "ap-south-1",
+                Bucket: process.env.S3_BUCKET_NAME,
+                // region: process.env.S3_BUCKET_REGION,
                 Key: `trainer/profile/${_id}/${profileBannerImg.originalname}`,
                 Body: profileBannerImg.buffer,
                 ContentType: profileBannerImg.mimetype
             };
             const data = await s3.upload(params).promise();
+            console.log(data)
             profileBannerUrl = data.Location;
         }
 
@@ -284,7 +294,7 @@ const trainerCertificateUpdate = async (req, resp) => {
             for (let i = 0; i < certificates.length; i++) {
                 const certificate = certificates[i];
                 const params = {
-                    Bucket: 'sisso-data',
+                    Bucket: process.env.S3_BUCKET_NAME,
                     Key: `trainer/certificates/${_id}/${certificate.originalname}`,
                     Body: certificate.buffer,
                     ContentType: certificate.mimetype
@@ -366,33 +376,39 @@ const trainerExperienceInfoUpdate = async (req, resp) => {
     const {
         expertIn, experience,
         sinceInTheFiled, recentCompany,
+        trainingSession,
         status
     } = req.body
     // console.log(req.body)
     const { _id } = req.user
     try {
         if (!req.user) {
-            return resp.status(401).json({ message: "User Not Found" });
-        }
-        const trainerDetails = await trainerSchema.findOneAndUpdate({ _id }, {
-            $set: {
-                'experience.expertIn': expertIn || '-',
-                'experience.experience': experience || '-',
-                'experience.sinceInTheFiled': sinceInTheFiled || 'Not Available',
-                'experience.recentCompany': recentCompany || 'Not Provided',
-                'experience.status': status ? true : false
-            }
-        })
-        await trainerDetails.save()
-        console.log(trainerDetails, 'trainerDetails')
-        if (trainerDetails) {
-            resp.status(201).json({ success: true, message: 'Experience Info Updated Successfully', trainerDetails })
+            return resp.status(200).json({ message: "User Not Found" });
         }
         else {
-            resp.status(200).json({ success: false, message: 'User Not Found' })
+
+            const trainerDetails = await trainerSchema.findOneAndUpdate({ _id }, {
+                $set: {
+                    'experiences.expertIn': expertIn || '-',
+                    'experiences.experience': experience || 0,
+                    'experiences.sinceInTheFiled': sinceInTheFiled || 0,
+                    'experiences.recentCompany': recentCompany || 'Not Provided',
+                    'experiences.status': status ? true : false,
+                    'experiences.trainingSession': trainingSession || 0
+                }
+            })
+            await trainerDetails.save()
+            // console.log(trainerDetails, 'trainerDetails')
+            if (trainerDetails) {
+                resp.status(201).json({ success: true, message: 'Experience Info Updated Successfully', trainerDetails })
+            }
+            else {
+                resp.status(200).json({ success: false, message: 'User Not Found' })
+            }
         }
     }
     catch (error) {
+        console.log('error', error)
         resp.status(200).json({ message: error.toString() })
     }
 
@@ -615,7 +631,7 @@ const addTrainingResources = async (req, resp) => {
             for (let i = 0; i < fileData.length; i++) {
                 const resourcesFile = fileData[i];
                 const params = {
-                    Bucket: 'sisso-data',
+                    Bucket: process.env.S3_BUCKET_NAME,
                     Key: `trainer/resourcesFiles/${_id}/${resourcesFile.originalname}`,
                     Body: resourcesFile.buffer,
                     ContentType: resourcesFile.mimetype
@@ -713,7 +729,7 @@ const deleteAppliedTraining = async (req, resp) => {
 
 // get all training details 
 const getAllTrainerDetails = async (req, resp) => {
-    console.log('req.query', req.query)
+    // console.log('req.query', req.query)
     const trainerDetails = await trainerSchema.find()
     if (trainerDetails) {
         resp.status(201).json({ success: true, message: 'TrainerDataFected', trainerDetails })
@@ -748,35 +764,35 @@ const UpdatePhoneNumber = async (req, resp) => {
     const {
         phoneNumber,
         otp
-    } = req.body 
-    console.log('req.body',req.body); 
+    } = req.body
+    console.log('req.body', req.body);
     const { _id } = req.user
 
     try {
-        if(req.user){
-            const valid =await compareOtp(otp,phoneNumber)
-            if(valid){
-                const findUser=await trainerSchema.findOne({'contactInfo.primaryNumber': req.user.contactInfo.primaryNumber,})
-                if(!findUser){
-                    resp.status(200).json({success:false,message:'User Details Not Found '})
+        if (req.user) {
+            const valid = await compareOtp(otp, phoneNumber)
+            if (valid) {
+                const findUser = await trainerSchema.findOne({ 'contactInfo.primaryNumber': req.user.contactInfo.primaryNumber, })
+                if (!findUser) {
+                    resp.status(200).json({ success: false, message: 'User Details Not Found ' })
                 }
-                else{
+                else {
                     const trainerDetails = await trainerSchema.findOneAndUpdate({ _id }, {
                         $set: {
                             'contactInfo.primaryNumber': phoneNumber,
-                        }   
-                    },{new:true})
-                    if(trainerDetails){
+                        }
+                    }, { new: true })
+                    if (trainerDetails) {
                         await trainerDetails.save()
-                        resp.status(201).json({success:true,message:'Trainer PhoneNumber Updated SuccessFully',trainerDetails})
+                        resp.status(201).json({ success: true, message: 'Trainer PhoneNumber Updated SuccessFully', trainerDetails })
                     }
-                    else{
-                        resp.status(200).json({success:false,message:'Error Updating Number'})
+                    else {
+                        resp.status(200).json({ success: false, message: 'Error Updating Number' })
                     }
                 }
             }
-            else{
-                resp.status(200).json({success:false,message:'Invalid Otp'})
+            else {
+                resp.status(200).json({ success: false, message: 'Invalid Otp' })
 
             }
 
@@ -798,5 +814,5 @@ module.exports = {
     addBookMarkedPost, getBookMarkedPostsByUserId, trainerProfileImageUpdate,
     trainerAppliedTraining, getAppliedTraining, deleteAppliedTraining, addTrainingResources,
     testProfileApi,
-    getAllTrainerDetails,UpdatePhoneNumber
+    getAllTrainerDetails, UpdatePhoneNumber
 }

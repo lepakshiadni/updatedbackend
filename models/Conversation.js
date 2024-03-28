@@ -5,9 +5,8 @@ const ConversationSchema = mongoose.Schema(
     {
         members: {
             type: Array,  // array of user id's that are in the conversation
-            required: true
+            // required: true
         },
-
         lastMessage: {
             type: {
                 sender: String,
@@ -16,6 +15,11 @@ const ConversationSchema = mongoose.Schema(
             },
             default: null,
         },
+        requestStatus:{
+            type:String,   // "pending", "accepted" or "rejected"
+            default: 'pending',
+        }
+
     },
 
     {
