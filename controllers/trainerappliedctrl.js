@@ -1,13 +1,13 @@
 const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmodel.js');
-const trainerSchema=require('../models/trainermodel.js')
+const trainerSchema = require('../models/trainermodel.js')
 const mongoose = require('mongoose');
 
 
-const getAllAppliedTraining = async (req, res) => {
+const getAllAppliedTraining = async (req, resp) => {
     try {
-        const allAppliedTrainingDetails = await trainerAppliedTrainingSchema.find();
+        const allAppliedTrainingDetails = await trainerAppliedTrainingSchema.find().sort({ createdAt: -1 });
 
-        // Filter out trainingDetails with appliedStatus set to false
+        // Filter out trainingDetails with appliedStatus set to false and applicationstatus not equal to 'Denied'
         const filteredTrainingDetails = allAppliedTrainingDetails.map((document) => {
             const filteredDetails = document?.trainingDetails?.filter((detail) => {
                 return detail.appliedStatus === false && detail.applicationstatus !== 'Denied';
@@ -24,16 +24,19 @@ const getAllAppliedTraining = async (req, res) => {
             return document.trainingDetails.length > 0;
         });
 
+        // If there are no filtered training details, return an error response
         if (finalFilteredTrainingDetails.length === 0) {
-            return res.status(200).json({ success: false, message: 'No Applied Training' });
+            return resp.status(200).json({ success: false, message: 'No Applied Training' });
         } else {
-            return res.status(201).json({ success: true, message: 'Filtered Applied Training Fetched', appliedTrainingDetails: finalFilteredTrainingDetails });
+            // Return the filtered applied training details
+            return resp.status(201).json({ success: true, message: 'Filtered Applied Training Fetched', appliedTrainingDetails: finalFilteredTrainingDetails });
         }
     } catch (error) {
         console.error('Error while fetching applied training details:', error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error', error });
+        return resp.status(500).json({ success: false, message: 'Internal Server Error', error });
     }
 };
+
 
 const updateAppliedStatus = async (req, resp) => {
     const { trainerId, trainingDetailsId, status } = req.body; // Assuming you're passing trainerId and trainingDetailsId in the request body
@@ -54,10 +57,18 @@ const updateAppliedStatus = async (req, resp) => {
             { new: true }
         );
         await updatedTraining.save()
-        console.log(updatedTraining);
-
+        // console.log(updatedTraining);
         if (updatedTraining) {
-            resp.status(201).json({ success: true, message: 'Applied status updated successfully', updatedTraining });
+            // Filter out trainingDetails with appliedStatus set to false
+            const filteredTrainingDetails = updatedTraining.trainingDetails.filter((detail) => {
+                return detail.appliedStatus === false && detail.applicationstatus !== 'Denied';
+            });
+            console.log('filter', filteredTrainingDetails);
+            if(updatedTraining&&filteredTrainingDetails){
+
+                resp.status(201).json({ success: true, message: 'Applied status updated successfully', appliedTrainingDetails: filteredTrainingDetails });
+            }
+
         } else {
             resp.status(200).json({ success: false, message: 'Trainer training details not found' });
         }
@@ -68,9 +79,9 @@ const updateAppliedStatus = async (req, resp) => {
 };
 
 
-const updateFeedBackTrainer=async(trainerId,rating,feedBack)=>{
-    const findTrainer=await trainerSchema.findById({_id:trainerId})
-    
+const updateFeedBackTrainer = async (trainerId, rating, feedBack) => {
+    const findTrainer = await trainerSchema.findById({ _id: trainerId })
+
 }
 const addFeedback = async (req, res) => {
     const { _id } = req.user;
@@ -114,11 +125,11 @@ const addFeedback = async (req, res) => {
 
 
 // by user id 
-const getFeedBack=async ()=>{
-    const {trainerId}=req.params
+const getFeedBack = async () => {
+    const { trainerId } = req.params
 
-    const findFeedBack=await trainerAppliedTrainingSchema.findById(trainerId,'trainingDetails')
-   
+    const findFeedBack = await trainerAppliedTrainingSchema.findById(trainerId, 'trainingDetails')
+
 
 }
 

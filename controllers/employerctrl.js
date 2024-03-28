@@ -4,11 +4,7 @@ const { generateToken } = require("../config/jwttoken.js");
 const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmodel.js');
 const bookmarkedEmployerSchema = require('../models/bookmarkedEmployerPostmodel.js')
 const SkillSchema = require('../models/skillmodel.js')
-
 const {compareOtp}=require('../utils/services.js')
-
-
-
 const aws = require("aws-sdk");
 require("dotenv").config();
 
@@ -40,7 +36,7 @@ const testProfileApi = async (req, resp) => {
 const employerSignUp = async (req, resp) => {
     const { fullName, companyName, designation, primaryNumber, role } = req.body;
 
-    console.log(req.body, role);
+    // console.log(req.body, role);
 
     const findEmployer = await employerSchema.findOne({ primaryNumber });
     if (!findEmployer) {
@@ -83,13 +79,15 @@ const employerSignUp = async (req, resp) => {
 
 const employerBasicInfoUpdate = async (req, resp) => {
     const { _id } = req.user
+    // console.log(req.body)
+    // console.log('req.file', req.files)
 
     try {
         let profileImgUrl;
-        if (req.files['profileImg']) {
+        if (req.files && req.files['profileImg']) {
             const profileImg = req.files['profileImg'][0];
             const params = {
-                Bucket: 'sisso-data',
+                Bucket: process.env.S3_BUCKET_NAME,
                 Key: `employer/profile/${_id}/${profileImg.originalname}`,
                 Body: profileImg.buffer,
                 ContentType: profileImg.mimetype
@@ -97,13 +95,16 @@ const employerBasicInfoUpdate = async (req, resp) => {
             const data = await s3.upload(params).promise();
             profileImgUrl = data.Location;
         }
+        // else{
+        //     console.log('req.file is not there')
+        // }
 
         // // Upload profile banner to S3
         let profileBannerUrl;
-        if (req.files['profileBanner']) {
+        if (req.files && req.files['profileBanner']) {
             const profileBanner = req.files['profileBanner'][0];
             const params = {
-                Bucket: 'sisso-data',
+                Bucket: process.env.S3_BUCKET_NAME,
                 Key: `employer/profile/${_id}/${profileBanner.originalname}`,
                 Body: profileBanner.buffer,
                 ContentType: profileBanner.mimetype
@@ -112,6 +113,9 @@ const employerBasicInfoUpdate = async (req, resp) => {
             profileBannerUrl = data.Location;
 
         }
+        // else{
+        //     console.log('req.file is not there')
+        // }
         // console.log(req.body.firstName)
 
 
@@ -143,7 +147,8 @@ const employerBasicInfoUpdate = async (req, resp) => {
         }
     }
     catch (error) {
-        resp.status(200).json({ success: false, error });
+        console.log(error)
+        resp.status(200).json({ success: false,message:'server Error', error });
     }
 }
 
@@ -154,12 +159,14 @@ const employerProfileImageUpdate = async (req, resp) => {
         let profileImgUrl;
         if (req.file) {
             const profileImg = req.file;
+
             const params = {
-                Bucket: 'sisso-data',
+                Bucket: process.env.S3_BUCKET_NAME,
                 Key: `employer/profile/${_id}/${profileImg.originalname}`,
                 Body: profileImg.buffer,
                 ContentType: profileImg.mimetype
             };
+
             const data = await s3.upload(params).promise();
             profileImgUrl = data.Location;
         }
@@ -192,7 +199,7 @@ const employerProfileBannerUpdate = async (req, resp) => {
         if (req.file) {
             const profileBannerImg = req.file;
             const params = {
-                Bucket: 'sisso-data',
+                Bucket: process.env.S3_BUCKET_NAME,
                 Key: `employer/profile/${_id}/${profileBannerImg.originalname}`,
                 Body: profileBannerImg.buffer,
                 ContentType: profileBannerImg.mimetype
@@ -357,8 +364,6 @@ const getemployerProfile = async (req, resp) => {
     }
 };
 
-
-
 //for employer portal 
 const getAppliedTrainingEmployer = async (req, resp) => {
     const { _id } = req.user
@@ -481,7 +486,7 @@ const getBookMarkedPostsByUserId = async (req, resp) => {
             resp.status(200).json({ success: false, message: "No Data Found" })
         }
         else {
-            resp.status(201).json({ success: true, userBookmarks: findBookMarkedPost })
+            resp.status(201).json({ success: true,message:'bookMarked Post fetch', userBookmarks: findBookMarkedPost })
         }
     }
     catch (error) {

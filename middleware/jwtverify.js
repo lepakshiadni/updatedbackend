@@ -28,11 +28,12 @@ const jwtverify = async (req, resp, next) => {
             }            
         }
         catch {
-            return resp.status(401).send({ success: false, message: "Unauth" });
+            return resp.status(200).send({ success: false, message: "Unauth" });
         }
     }
     else {
         console.log("not token in header")
+        return  resp.status(200).send({success :false ,message:"No Token Provided"});
     }
 
 }

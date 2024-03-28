@@ -23,8 +23,8 @@ const trainerCreatePost = async (req, resp) => {
         if (req.file) {
             const postImg = req.file
             const params = {
-                Bucket: 'sisso-data',
-                Key: `trainerPost/${_id}/${postImg.originalname}`,
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: `trainer/trainerPost/${_id}/${postImg.originalname}`,
                 Body: postImg.buffer,
                 ContentType: postImg.mimetype
             };
@@ -46,10 +46,10 @@ const trainerCreatePost = async (req, resp) => {
 
             const trainercreatePost = new trainerCreatePostSchema({
                 postedById: _id,
-                postedByName: `${req.user?.basicInfo?.firstName} ${req.user?.basicInfo?.lastName}` || `${req.user?.fullName}`,
-                postedByDesignation: `${req.user?.basicInfo?.designation}`,
+                postedByName: req?.user?.basicInfo?.firstName ? req.user?.basicInfo?.firstName + req.user?.basicInfo?.lastName : req.user?.fullName || '',
+                postedByDesignation: req.user?.basicInfo?.designation ? req?.user?.basicInfo?.designation : '',
                 postedByImg: req.user?.basicInfo?.profileImg || '',
-                postedByCompany: `${req.user?.basicInfo?.company}`,
+                postedByCompany: req.user?.basicInfo?.company ? req.user?.basicInfo?.company : '' ,
                 postForAllSissoMember: req.body.postForAllSissoMember || false,
                 onlyPostMyConnenctions: req.body.onlyPostMyConnenctions || false,
                 postedDescrition: req.body.postDescription,
@@ -91,7 +91,7 @@ const addLikeToTrainerPost = async (req, resp) => {
             const trainercreatePost = await trainerCreatePostSchema.find().sort({ createdAt: -1 })
             // console.log('trainer',trainercreatePost)
             resp.status(201).json({ success: true, message: 'Like Added', trainercreatePost });
-        } else {
+        } else {``
             // Remove like if it already exists
             findTrainingPost.likes.splice(existingLikeIndex, 1);
             await findTrainingPost.save();

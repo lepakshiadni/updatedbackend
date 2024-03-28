@@ -30,7 +30,7 @@ const postTrainingRequirement = async (req, resp) => {
         let tocUrl = '';
         if (req.file) {
             const params = {
-                Bucket: 'sisso-data',
+                Bucket: process.env.S3_BUCKET_NAME,
                 Key: `employer/tocFile/${_id}/${req.file.originalname.replace(/\s+/g, '')}`,
                 Body: req.file.buffer,
                 ContentType: req.file.mimetype
@@ -141,10 +141,14 @@ const deletePostRequirement = async (req, resp) => {
     // console.log(postId)
     try {
         if (req.user?.role === 'employer') {
-            const postTrainingDetails = await postTrainingRequirementSchema.findOneAndDelete({ _id: postId })
+            const deletePostRequirement = await postTrainingRequirementSchema.findOneAndDelete({ _id: postId })
             // console.log(findPostTrainingRequirements)
-            if (postTrainingDetails) {
-                resp.status(201).json({ success: true, message: "Deleted Successfully", postTrainingDetails })
+            if (deletePostRequirement) {
+                const postTrainingDetails=await postTrainingRequirementSchema.find();
+                if(deletePostRequirement && postTrainingDetails){
+                    resp.status(201).json({ success: true, message: "Deleted Successfully", postTrainingDetails })
+                }
+                
             }
             else {
                 resp.status(200).json({ success: false, message: 'Post Not Found' })

@@ -163,7 +163,7 @@ const trainerSchema = new mongoose.Schema(
                 }
             }
         },
-        experience: {
+        experiences: {
             expertIn: {
                 type: String
             },
@@ -175,6 +175,10 @@ const trainerSchema = new mongoose.Schema(
             },
             recentCompany: {
                 type: String
+            },
+            trainingSession:{
+                type:Number,
+                default:0
             },
             status: {
                 type: Boolean,
