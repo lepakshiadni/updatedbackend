@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 4000
 
 # Run the app when the container launches
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start","--watch"]
