@@ -22,7 +22,8 @@ const postTrainingRequirement = async (req, resp) => {
             startDate, endDate, urgentlyNeedTrainer,
         } = req.body;
         let { topics } = req.body
-
+        
+        
         if (typeof topics === 'string') {
             topics = JSON.parse(topics)
         }

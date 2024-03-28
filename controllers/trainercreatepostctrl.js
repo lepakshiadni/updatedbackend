@@ -199,7 +199,7 @@ const getpostTrainercreatePostById = async (req, resp) => {
 const getpostTrainerPost = async (req, resp) => {
     try {
         const trainercreatePost = await trainerCreatePostSchema.find().sort({ createdAt: -1 });
-        console.log(trainercreatePost);
+        // console.log(trainercreatePost);
         if (trainercreatePost.length == 0) {
             resp.status(200).json({ success: false, message: "No Post Found" })
         }
