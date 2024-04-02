@@ -55,7 +55,7 @@ const trainerCreatePost = async (req, resp) => {
                 postedDescrition: req.body.postDescription,
                 postedImg: postedImg
             })
-            console.log(trainercreatePost)
+            // console.log(trainercreatePost)
             trainercreatePost.save()
             resp.status(201).json({ success: true, message: "Your Post has been created Successfully!", trainercreatePost });
         }
@@ -199,13 +199,58 @@ const getpostTrainercreatePostById = async (req, resp) => {
 const getpostTrainerPost = async (req, resp) => {
     try {
         const trainercreatePost = await trainerCreatePostSchema.find().sort({ createdAt: -1 });
+        const tcp = await trainerCreatePostSchema.aggregate([
+            {  "$addFields": { "postedByIdObj": { "$toObjectId": "$postedById" } } },
+            {
+              $lookup: {
+                from: "trainers",
+                localField: "postedByIdObj",
+                foreignField: "_id",
+                as: "trainer_data"
+              }
+            },
+            // {
+            //     $unwind: "$trainer_data"
+            //   },
+              {$set: {'trainer_data': {$first: '$trainer_data'}}},
+              {$set: {
+                'postedByDesignation': '$trainer_data.basicInfo.designation',
+                'postedByImg': '$trainer_data.basicInfo.profileImg',
+                'postedByName': '$trainer_data.basicInfo.firstName',
+            }},
+            {
+                "$project":{
+                    "_id":1,
+                    "postedImg":1,
+                    "onlyPostMyConnenctions":1,
+                    "postForAllSissoMember":1,
+                    "createdAt":1,
+                    // "postedImg":1,
+                    "hide":1,
+                    "likes":1,
+                    "comments":1,
+                    "updatedAt":1,
+                    "postedByDesignation":1,
+                    "postedById": 1,
+                    "postedByImg":1,
+                    "postedByName":1,
+                    "postedDescrition":1,
+                    "trainer_data":1,
+                }
+            },
+            {"$match": { "postedByImg": { "$exists" : true } }}
+          ]).sort({ createdAt:-1 })
         // console.log(trainercreatePost);
+        console.log("tran",tcp[0]?.trainer_data,"abck")
+
+
         if (trainercreatePost.length == 0) {
             resp.status(200).json({ success: false, message: "No Post Found" })
         }
         else {
-            console.log(trainercreatePost)
-            resp.status(201).json({ success: true, message: 'Post Fected', trainercreatePost })
+            console.log("trainercreatePost")
+            // resp.status(201).json({ success: true, message: 'Post Fected', trainercreatePost })
+            resp.status(201).json({ success: true, message: 'Post Fected', trainercreatePost:tcp })
         }
     }
     catch (error) {

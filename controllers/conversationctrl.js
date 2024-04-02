@@ -1,4 +1,6 @@
 const ConversationSchema = require('../models/Conversation')
+const mongoose = require('mongoose');
+
 // const User = require('../models/usermodel');
 const trainerSchema = require('../models/trainermodel')
 const employerSchema = require('../models/employermodel')
@@ -8,15 +10,15 @@ const MessageSchema = require('../models/message')
 
 const newConversation = async (req, resp) => {
     const { senderId, receiverId } = req.body;
-    console.log('api hit')
-    console.log(req.body)
+    // console.log('api hit')
+    // console.log(req.body)
 
     try {
         // Find the sender and receiver based on their IDs
         const sender = (await trainerSchema.findById(senderId)) || (await employerSchema.findById(senderId));
         const receiver = (await trainerSchema.findById(receiverId)) || (await employerSchema.findById(receiverId));
-        console.log(sender)
-        console.log(receiver)
+        // console.log(sender)
+        // console.log(receiver)
         if (!sender || !receiver) {
             return resp.status(200).json({ success: false, message: 'Sender or receiver not found.' });
         }
@@ -34,7 +36,7 @@ const newConversation = async (req, resp) => {
         if (existingConversation) {
             return resp.status(200).json({
                 success: false,
-                message: 'Conversation already exists between the users.',
+                message: 'Request Already Shared Waiting for Accept !',
                 conversation: existingConversation,
             });
         }
@@ -42,13 +44,13 @@ const newConversation = async (req, resp) => {
         // Create a new conversation
         const newconversation = new ConversationSchema({
             members: [
-                { _id: sender._id, fullName: sender?.fullName, basicInfo: sender.basicInfo },
-                { _id: receiver._id, fullName: receiver?.fullName, basicInfo: receiver.basicInfo }
+                { _id: sender._id, fullName: sender?.fullName, basicInfo: sender.basicInfo, role: sender.role },
+                { _id: receiver._id, fullName: receiver?.fullName, basicInfo: receiver.basicInfo, role: receiver.role }
             ],
         });
 
         await newconversation.save();
-        resp.status(201).json({ success: true, message: 'Connected', conversation: newconversation });
+        resp.status(201).json({ success: true, message: 'Requested', conversation: newconversation });
     } catch (err) {
         console.error("Error creating conversation:", err);
         resp.status(500).json({ success: false, error: err.message });
@@ -57,13 +59,81 @@ const newConversation = async (req, resp) => {
 
 
 
+// controller for get the connection request coming from trainer
+
+const getEmployerConnectionsRequest = async (req, resp) => {
+    // employer user id should be the payload id has sender id
+    // const { senderId } = req.params
+    const senderId = req.user?._id
+
+    try {
+        const findconversationRequest = await ConversationSchema.find({
+            members: { $elemMatch: { _id: senderId } },
+            requestStatus: "pending" // Filter by request status being "accepted"
+        })
+        // console.log(findconversationRequest)
+        if (findconversationRequest?.length > 0) {
+            const conversation = findconversationRequest?.filter(item => item?.members[0]?._id != senderId && item?.members[0]?.role === 'trainer')
+            if (conversation?.length > 0) {
+                resp.status(201).json({ success: true, message: 'Connection Found !', conversation });
+            }
+            else {
+                resp.status(200).json({ success: false, message: "No Connection Request Found!" })
+            }
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'No Connection Found' })
+        }
+    }
+    catch (error) {
+        console.log('error', error)
+        resp.status(200).json({ success: false, message: 'Internal Server Error' })
+    }
+
+}
+
+
+
+// controller for get the connection request coming from employer
+const getTrainerConnectionsRequest = async (req, resp) => {
+    //  trainer user id should be the payload id has sender id
+    // const { senderId } = req.params
+    const senderId = req.user?._id
+    console.log('apit hit')
+
+    try {
+        const findconversationRequest = await ConversationSchema.find({
+            members: { $elemMatch: { _id: senderId } },
+            requestStatus: "pending" // Filter by request status being "accepted"
+        })
+        if (findconversationRequest?.length > 0) {
+            const conversation = findconversationRequest?.filter(item => item?.members[0]?._id != senderId && item?.members[0]?.role === 'employer')
+            if (conversation?.length > 0) {
+                resp.status(201).json({ success: true, message: 'Connection Request Found !', conversation });
+            }
+            else {
+                resp.status(200).json({ success: false, message: "No Connection Request Found!" })
+            }
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'No Connection Found' })
+        }
+    }
+    catch (error) {
+        console.log('error', error)
+        resp.status(200).json({ success: false, message: 'Internal Server Error' })
+    }
+
+}
+
+
 //get all coversation 
 
 const getAllConversation = async (req, resp) => {
-    const allConversation = await ConversationSchema.find()
+    const allConversation = await ConversationSchema.find({ requestStatus: 'pending' })
     console.log(allConversation)
     try {
-        resp.status(201).json(allConversation)
+        resp.status(201).json({ success: true, message: 'All Conversation', allConversation })
     }
     catch {
         resp.status(200).json({ message: 'sever error' })
@@ -76,53 +146,72 @@ const getAllConversation = async (req, resp) => {
 const getConversation = async (req, resp) => {
     const { userId } = req.params;
     // console.log(`Searching for conversations where user ID ${userId} is in the members array...`);
+    if (userId?.length > 0) {
 
-    try {
-        const conversation = await ConversationSchema.find({
-            members: { $elemMatch: { _id: userId } },
-            requestStatus: "accepted" // Filter by request status being "accepted"
-        })
+        try {
 
+            const conversation = await ConversationSchema.find({
+                members: { $elemMatch: { _id: userId } },
+                requestStatus: "accepted" // Filter by request status being "accepted"
+            })
 
-        if (conversation?.length > 0) {
-            resp.status(201).json({ sucess: true, conversation: conversation });
+            if (conversation?.length > 0) {
+                resp.status(201).json({ sucess: true, conversation });
+            }
+            else {
+                resp.status(200).json({ success: false, message: 'No matched result or Waiting For Accept' })
+            }
+
+        } catch (err) {
+            // console.error(`Error getting conversation by user ID ${userId}:`, err);
+            resp.status(200).json({ success: false, message: `Server Error : ${err}` });
         }
-        else {
-            resp.status(200).json({ success: false, message: 'No matched result or Waiting For Accept' })
-        }
-
-    } catch (err) {
-        console.error(`Error getting conversation by user ID ${userId}:`, err);
-        resp.status(200).json({ success: false, message: `Server Error : ${err}` });
     }
+    else {
+        resp.status(200).json({ success: false, message: 'User Id not provided' })
+    }
+
 };
 
-const getConversationRequest = async (req, resp) => {
-    const { userId } = req.params;
+
+// for trainer portal 
+const getAllRequested = async (req, resp) => {
+    const senderId = req.user?._id
+    console.log('senderid', senderId)
+    console.log('apit hit')
+
     try {
-        const conversation = await ConversationSchema.find({
-            members: { $elemMatch: { _id: userId } },
-            requestStatus: "pending"
+        const findconversationRequest = await ConversationSchema.find({
+            members: { $elemMatch: { _id: senderId } },
+            requestStatus: "pending" // Filter by request status being "accepted"
         })
-        if (conversation.length === 0) {
-            resp.status(200).json({ success: false, message: 'There are no requests at this time.' })
+        // console.log(findconversationRequest)
+        if (findconversationRequest?.length > 0) {
+            const conversation = findconversationRequest?.filter(item => item?.members[1]?._id != senderId )
+            console.log('converation',findconversationRequest[0]?.members[1]?._id != senderId )
+            if (conversation?.length > 0) {
+                resp.status(201).json({ success: true, message: 'Connection Request Found !', conversation });
+            }
+            else {
+                resp.status(200).json({ success: false, message: "No Connection Request Found!" })
+            }
         }
         else {
-            resp.status(201).json({ sucess: true, message: 'conversationFound', conversation });
+            resp.status(200).json({ success: false, message: 'No Connection Found' })
         }
-
-
     }
-    catch (err) {
-        // console.log('error', err)
-        resp.status(200).json({ success: false, message: 'Server error', errors: err })
+    catch (error) {
+        console.log('error', error)
+        resp.status(200).json({ success: false, message: 'Internal Server Error' })
     }
-}
 
-// Accept the converstaion request 
+};
 
-const conversationRequestAccept = async (req, resp) => {
-    const  {requestId}  = req.body;
+
+// Accept the converstaion request  from employer portal
+
+const employerConversationRequestAccept = async (req, resp) => {
+    const { requestId } = req.body;
     const { _id } = req.user
     console.log('api hit')
     console.log(requestId)
@@ -132,7 +221,7 @@ const conversationRequestAccept = async (req, resp) => {
 
         const findconversation = await ConversationSchema.findOneAndUpdate(
             {
-                members: { $elemMatch: { _id: requestId } },
+                members: { $elemMatch: { _id: requestId, _id } },
                 requestStatus: "pending",
             },
             {
@@ -142,32 +231,162 @@ const conversationRequestAccept = async (req, resp) => {
             },
             { new: true },
         )
-        console.log(findconversation);
+        // console.log(findconversation);
         if (findconversation) {
 
             await findconversation.save()
-            console.log(findconversation);
+            // console.log(findconversation);
             const conversation = await ConversationSchema.find({
                 members: { $elemMatch: { _id } },
                 requestStatus: "pending" // Filter by request status being "pending"
             })
-            resp.status(200).json({ success: true, message: 'Conversation Request is Accepted', conversation })
-
+            resp.status(201).json({ success: true, message: 'Conversation Request is Accepted', conversation })
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'Error in Converstaion Accept' })
         }
 
-        
+
     }
     catch (error) {
-        console.log(error)
+        // console.log(error)
         console.log("Error in finding and updating the document")
+        resp.status(200).json({ success: false, message: 'Server Error', error });
 
     }
+}
+
+// accept the converation request from trainer portal
+const trainerConversationRequestAccept = async (req, resp) => {
+    const { requestId } = req.body;
+    const { _id } = req.user
+    console.log('api hit')
+    console.log(requestId)
+    // Find the specific request from the array of requests in db and update it to accepted status
+
+    try {
+
+        const findconversation = await ConversationSchema.findOneAndUpdate(
+            {
+                members: { $elemMatch: { _id: requestId, _id } },
+                requestStatus: "pending",
+            },
+            {
+                $set: {
+                    'requestStatus': 'accepted',
+                }
+            },
+            { new: true },
+        )
+        // console.log(findconversation);
+        if (findconversation) {
+
+            await findconversation.save()
+            // console.log(findconversation);
+            const conversation = await ConversationSchema.find({
+                members: { $elemMatch: { _id } },
+                requestStatus: "pending" // Filter by request status being "pending"
+            })
+            resp.status(201).json({ success: true, message: 'Conversation Request is Accepted', conversation })
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'Error in Converstaion Accept' })
+        }
 
 
+    }
+    catch (error) {
+        // console.log(error)
+        console.log("Error in finding and updating the document")
+        resp.status(200).json({ success: false, message: 'Server Error', error });
+
+    }
+}
+
+const employerdeclineConversation = async (req, resp) => {
+    const { id } = req.body;
+    const { _id } = req.user
+    console.log('apit delcine hit')
+    try {
+        const declineConversation = await ConversationSchema.findOneAndUpdate(
+            {
+                members: { $elemMatch: { _id: id, _id } },
+                requestStatus: "pending",
+            },
+            {
+                $set: {
+                    'requestStatus': 'decline',
+                }
+            },
+            { new: true },
 
 
+        )
+        console.log(declineConversation);
+
+        if (declineConversation && req.user) {
+            const findconversation = await ConversationSchema.find({
+                members: { $elemMatch: { _id } },
+                requestStatus: "pending" // Filter by request status being "pending"
+            })
+            const conversation = findconversation?.filter(item => item?.members[0]?._id != senderId && item?.members[0]?.role === 'trainer')
+            if (conversation) {
+                resp.status(201).json({ success: true, message: 'Conversation Request is Declined', conversation })
+            }
+
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'No Pending Request Found!' })
+        }
+    }
+    catch (error) {
+        resp.status(200).json({ success: false, message: 'Server Error', error })
+    }
 
 }
+
+const trainerdeclineConversation = async (req, resp) => {
+    const { id } = req.body;
+    const { _id } = req.user
+    console.log('apit delcine hit')
+    try {
+        const declineConversation = await ConversationSchema.findOneAndUpdate(
+            {
+                members: { $elemMatch: { _id: id, _id } },
+                requestStatus: "pending",
+            },
+            {
+                $set: {
+                    'requestStatus': 'decline',
+                }
+            },
+            { new: true },
+
+
+        )
+        console.log(declineConversation);
+
+        if (declineConversation && req.user) {
+            const findconversation = await ConversationSchema.find({
+                members: { $elemMatch: { _id } },
+                requestStatus: "pending" // Filter by request status being "pending"
+            })
+            const conversation = findconversation?.filter(item => item?.members[0]?._id != senderId && item?.members[0]?.role === 'employer')
+            if (conversation) {
+                resp.status(201).json({ success: true, message: 'Conversation Request is Declined', conversation })
+            }
+
+        }
+        else {
+            resp.status(200).json({ success: false, message: 'No Pending Request Found!' })
+        }
+    }
+    catch (error) {
+        resp.status(200).json({ success: false, message: 'Server Error', error })
+    }
+
+}
+
 
 // Update last message in a conversation
 const updateLastMessage = async (req, resp) => {
@@ -192,7 +411,7 @@ const updateLastMessage = async (req, resp) => {
 
         resp.status(200).json({ success: true, updatedConversation });
     } catch (err) {
-        console.error(`Error updating last message for conversation ID ${conversationId}:`, err);
+        // console.error(`Error updating last message for conversation ID ${conversationId}:`, err);
         resp.status(500).json({ success: false, error: err.message });
     }
 };
@@ -215,6 +434,8 @@ const getLastMessage = async (req, resp) => {
 module.exports = {
     newConversation, getConversation,
     getAllConversation, updateLastMessage,
-    getLastMessage, getConversationRequest,
-    conversationRequestAccept
+    getLastMessage, trainerConversationRequestAccept,
+    employerConversationRequestAccept, employerdeclineConversation,
+    trainerdeclineConversation, getAllRequested,
+    getEmployerConnectionsRequest, getTrainerConnectionsRequest
 }

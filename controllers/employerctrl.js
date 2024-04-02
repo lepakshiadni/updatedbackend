@@ -2,9 +2,11 @@
 const employerSchema = require("../models/employermodel.js");
 const { generateToken } = require("../config/jwttoken.js");
 const trainerAppliedTrainingSchema = require('../models/trainerappliedtrainingmodel.js');
+const postTrainingRequirementSchema = require('../models/employerpostTrainingRequirementmodel')
 const bookmarkedEmployerSchema = require('../models/bookmarkedEmployerPostmodel.js')
 const SkillSchema = require('../models/skillmodel.js')
-const {compareOtp}=require('../utils/services.js')
+const { compareOtp } = require('../utils/services.js')
+const mongoose = require('mongoose')
 const aws = require("aws-sdk");
 require("dotenv").config();
 
@@ -148,7 +150,7 @@ const employerBasicInfoUpdate = async (req, resp) => {
     }
     catch (error) {
         console.log(error)
-        resp.status(200).json({ success: false,message:'server Error', error });
+        resp.status(200).json({ success: false, message: 'server Error', error });
     }
 }
 
@@ -356,15 +358,104 @@ const getemployerProfile = async (req, resp) => {
         if (employerDetails) {
             resp.status(201).json({ success: true, message: 'employerProfileFected', employerDetails })
         } else {
-            resp.status(200).json({sucess: false,message: "You are not authorized to access this api",});
+            resp.status(200).json({ sucess: false, message: "You are not authorized to access this api", });
         }
     }
     catch (error) {
-        resp.status(200).json({success:false,message:'Internal Server Error',error})
+        resp.status(200).json({ success: false, message: 'Internal Server Error', error })
     }
 };
 
+
+
 //for employer portal 
+
+const getEmployerProfileById = async (req, resp) => {
+    const { id } = req.params;
+    try {
+
+        const employerDetails = await employerSchema.findOne({ _id: id });
+        const employerPost = await postTrainingRequirementSchema.aggregate([
+            // {  "$addFields": { "postedByIdObj": { "$toObjectId": "$postedById" } } },
+
+           
+            {
+                $lookup: {
+                    from: 'employers',
+                    localField: 'postedById',
+                    foreignField: '_id',
+                    as: 'employerData'
+                }
+            },
+            {
+                $set: {
+                    'employerData': { $first: '$employerData' }
+                }
+            },
+            {
+                $set: {
+                    'postedByName': '$employerData.fullName',
+                    'postedByCompanyName': "$employerData.companyName",
+                    'postedByImg': "$employerData.basicinfo.profileImg",
+                    'postedByDesignation': "$employerData.designation"
+                }
+            },
+            {
+                '$project': {
+                    "_id": 1,
+                    "trainingName": 1,
+                    "description": 1,
+                    "topics": 1,
+                    "modeOfTraining": 1,
+                    "typeOfTraining": 1,
+                    "experience": 1,
+                    "location": 1,
+                    "participantCount": 1,
+                    "minBudget": 1,
+                    "maxBudget": 1,
+                    "durationType": 1,
+                    "durationCount": 1,
+                    "selectedCountry": 1,
+                    "availability": 1,
+                    "tocFile": 1,
+                    "startDate": 1,
+                    "endDate": 1,
+                    "createdAt":1,
+                    "urgentlyNeedTrainer": 1,
+                    'postedById':1,
+                    'postedByImg':1,
+                    'postedByName':1,
+                    'postedByCompanyName':1,
+                    'postedByDesignation':1
+                }
+            },
+            {
+                '$match': {
+                    "postedById": new mongoose.Types.ObjectId(id), 
+                    // 'postedById':{'$exists:true}
+
+                },
+
+            },
+
+        ])
+        // .sort({ createdAt: -1 });
+        // console.log('employerPost', employerPost);
+
+        if (!employerDetails) {
+            return resp.status(404).json({ success: false, message: "No User Found" });
+        } else {
+            return resp.status(200).json({ success: true, message: 'Employer Details Fetched',employerDetails, employerPost });
+        }
+    } catch (error) {
+        console.log('error', error);
+        return resp.status(200).json({ success: false, message: "Server Error", error });
+    }
+};
+
+
+
+
 const getAppliedTrainingEmployer = async (req, resp) => {
     const { _id } = req.user
     try {
@@ -486,7 +577,7 @@ const getBookMarkedPostsByUserId = async (req, resp) => {
             resp.status(200).json({ success: false, message: "No Data Found" })
         }
         else {
-            resp.status(201).json({ success: true,message:'bookMarked Post fetch', userBookmarks: findBookMarkedPost })
+            resp.status(201).json({ success: true, message: 'bookMarked Post fetch', userBookmarks: findBookMarkedPost })
         }
     }
     catch (error) {
@@ -498,35 +589,35 @@ const UpdatePhoneNumber = async (req, resp) => {
     const {
         phoneNumber,
         otp
-    } = req.body 
-    console.log('req.body',req.body); 
+    } = req.body
+    console.log('req.body', req.body);
     const { _id } = req.user
 
     try {
-        if(req.user){
-            const valid =await compareOtp(otp,phoneNumber)
-            if(valid){
-                const findUser=await employerSchema.findOne({'contactInfo.primaryNumber': req.user.contactInfo.primaryNumber,})
-                if(!findUser){
-                    resp.status(200).json({success:false,message:'User Details Not Found '})
+        if (req.user) {
+            const valid = await compareOtp(otp, phoneNumber)
+            if (valid) {
+                const findUser = await employerSchema.findOne({ 'contactInfo.primaryNumber': req.user.contactInfo.primaryNumber, })
+                if (!findUser) {
+                    resp.status(200).json({ success: false, message: 'User Details Not Found ' })
                 }
-                else{
+                else {
                     const employerDetails = await employerSchema.findOneAndUpdate({ _id }, {
                         $set: {
                             'contactInfo.primaryNumber': phoneNumber,
-                        }   
-                    },{new:true})
-                    if(employerDetails){
+                        }
+                    }, { new: true })
+                    if (employerDetails) {
                         await employerDetails.save()
-                        resp.status(201).json({success:true,message:'Employer PhoneNumber Updated SuccessFully',employerDetails})
+                        resp.status(201).json({ success: true, message: 'Employer PhoneNumber Updated SuccessFully', employerDetails })
                     }
-                    else{
-                        resp.status(200).json({success:false,message:'Error Updating Number'})
+                    else {
+                        resp.status(200).json({ success: false, message: 'Error Updating Number' })
                     }
                 }
             }
-            else{
-                resp.status(200).json({success:false,message:'Invalid Otp'})
+            else {
+                resp.status(200).json({ success: false, message: 'Invalid Otp' })
 
             }
 
@@ -543,6 +634,7 @@ const UpdatePhoneNumber = async (req, resp) => {
 module.exports = {
     employerSignUp,
     getemployerProfile,
+    getEmployerProfileById,
     employerProfileImageUpdate,
     employerProfileBannerUpdate,
     employerBasicInfoUpdate,

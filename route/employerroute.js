@@ -2,7 +2,7 @@ const route = require('express').Router()
 
 //employer Details route 
 const {
-    employerSignUp, getemployerProfile, employerBasicInfoUpdate,employerProfileImageUpdate,employerProfileBannerUpdate, employerSkillsUpdate, employerContactInfoUpdate, employerExperienceInfoUpdate,getSkills,
+    employerSignUp, getemployerProfile,getEmployerProfileById, employerBasicInfoUpdate,employerProfileImageUpdate,employerProfileBannerUpdate, employerSkillsUpdate, employerContactInfoUpdate, employerExperienceInfoUpdate,getSkills,
     getAppliedTrainingEmployer, employerExperienceInfoDelete,updateProfileVisibility, addBookMarkedPost, getBookMarkedPostsByUserId, UpdatePhoneNumber,
 } = require('../controllers/employerctrl')
 

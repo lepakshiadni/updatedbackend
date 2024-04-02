@@ -18,7 +18,7 @@ const ConversationSchema = mongoose.Schema(
         requestStatus:{
             type:String,   // "pending", "accepted" or "rejected"
             default: 'pending',
-        }
+        },
 
     },
 

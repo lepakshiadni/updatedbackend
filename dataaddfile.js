@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+import { useParams } from 'react-router-dom';
 const dotenv = require("dotenv")
 dotenv.config();
 const URI = process.env.DB
@@ -382,3 +383,7 @@ const skill = mongoose.model('Skills', skillsSchema)
 // skill.insertMany(data)
 
 console.log('done intersation')
+
+
+
+

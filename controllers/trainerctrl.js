@@ -535,6 +535,9 @@ const trainerAppliedTraining = async (req, resp) => {
         const { _id } = req.user;
         const { trainingPostId } = req.params;
         const { trainingDetails } = req.body;
+        
+        console.log("trainingDetails", trainingDetails);
+        console.log('trainingPostId', trainingPostId);
 
         // const ctrainerAvailableDate1 = new Date(trainingDetails.trainerAvailableDate1)
         // const ctrainerAvailableDate2 = new Date(trainingDetails.trainerAvailableDate2)

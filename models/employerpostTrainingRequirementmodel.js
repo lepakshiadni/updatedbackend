@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const employerPostRequriementSchema = new mongoose.Schema({
     postedById: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Employer'
+        ref: 'employer'
     },
     postedByName: {
         type: String

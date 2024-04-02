@@ -11,6 +11,8 @@ const {
 
 const {updateRequestStatus,getAllRequestTrainer}=require('../controllers/employerTrainingRequestctrl')
 
+const {getEmployerProfileById}=require('../controllers/employerctrl')
+
 const { jwtverify } = require('../middleware/jwtverify')
 const multer = require('multer')
 
@@ -46,6 +48,7 @@ route.get('/getAllTrainerDetails',getAllTrainerDetails)
 route.get('/getAllRequestTrainer',jwtverify,getAllRequestTrainer);
 route.put('/updateRequestStatus',jwtverify,updateRequestStatus)
 
+route.get("/getEmployerProfileById/:id", getEmployerProfileById);
 
 
 

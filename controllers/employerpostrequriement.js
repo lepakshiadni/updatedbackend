@@ -22,8 +22,8 @@ const postTrainingRequirement = async (req, resp) => {
             startDate, endDate, urgentlyNeedTrainer,
         } = req.body;
         let { topics } = req.body
-        
-        
+
+
         if (typeof topics === 'string') {
             topics = JSON.parse(topics)
         }
@@ -51,8 +51,8 @@ const postTrainingRequirement = async (req, resp) => {
                 tocFileName: req.file?.originalname.replace(/\s+/g, '') || '',
                 tocUrl
             },
-            urgentlyNeedTrainer, postedById: _id,
-
+            urgentlyNeedTrainer,
+            postedById: _id,
             postedByName: req.user?.fullName || '',
             postedByCompanyName: req.user?.companyName || '',
             postedByImg: req.user?.basicInfo?.profileImg || '',
@@ -139,17 +139,16 @@ const addLikeToTrainingPost = async (req, resp) => {
 
 const deletePostRequirement = async (req, resp) => {
     const { postId } = req.params
-    // console.log(postId)
+    const { _id } = req.user
     try {
         if (req.user?.role === 'employer') {
-            const deletePostRequirement = await postTrainingRequirementSchema.findOneAndDelete({ _id: postId })
+            const deletePostRequirement = await postTrainingRequirementSchema.findOneAndDelete({ _id: postId, postedById: _id })
             // console.log(findPostTrainingRequirements)
             if (deletePostRequirement) {
-                const postTrainingDetails=await postTrainingRequirementSchema.find();
-                if(deletePostRequirement && postTrainingDetails){
+                const postTrainingDetails = await postTrainingRequirementSchema.find({ postedById: _id });
+                if (deletePostRequirement && postTrainingDetails) {
                     resp.status(201).json({ success: true, message: "Deleted Successfully", postTrainingDetails })
                 }
-                
             }
             else {
                 resp.status(200).json({ success: false, message: 'Post Not Found' })
@@ -225,7 +224,7 @@ const getpostTrainingRequirement = async (req, resp) => {
         const postTrainingDetails = await postTrainingRequirementSchema.find({ postedById: _id })
             .sort({ createdAt: -1 });
 
-        // console.log(postTrainingDetails)
+        console.log(typeof postTrainingDetails[0]?._id )
         if (postTrainingDetails.length == 0) {
             resp.status(200).json({ success: false, message: "No Training Requirements  Found" })
         }
