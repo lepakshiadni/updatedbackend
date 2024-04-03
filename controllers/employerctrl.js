@@ -392,7 +392,7 @@ const getEmployerProfileById = async (req, resp) => {
                     'employerData': { $first: '$employerData' }
                 }
             },
-            {
+            { 
                 $set: {
                     'postedByName': '$employerData.fullName',
                     'postedByCompanyName': "$employerData.companyName",
