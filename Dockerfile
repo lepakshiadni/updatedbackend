@@ -19,7 +19,7 @@ EXPOSE 4000
 # Run the app without the watch flag
 CMD ["npm", "start"]
 
--------------------
+# -------------------
 
 # # Use the official Node.js 14 image as the base image.
 # FROM node:alpine3.18
