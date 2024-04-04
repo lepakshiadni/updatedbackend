@@ -322,6 +322,16 @@ const hidePost = async (req, resp) => {
     }
 }
 
+const employerPostSearchHistory = async (req, res) => {
+    try {
+        const employerpost = await postTrainingRequirementSchema.find();
+        res.json(employerpost);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 module.exports = {
     postTrainingRequirement,
     getpostTrainingRequirement,
@@ -333,5 +343,6 @@ module.exports = {
     deletePostRequirement,
     getAllPostTrainingRequirement,
     deletePostTrainingComment,
-    hidePost
+    hidePost,
+    employerPostSearchHistory
 }

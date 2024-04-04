@@ -225,7 +225,6 @@ const getpostTrainerPost = async (req, resp) => {
                     "onlyPostMyConnenctions":1,
                     "postForAllSissoMember":1,
                     "createdAt":1,
-                    // "postedImg":1,
                     "hide":1,
                     "likes":1,
                     "comments":1,
@@ -301,9 +300,18 @@ const hidePost = async (req,resp) => {
     }
 }
 
+const trainerPostSearchHistory = async (req, res) => {
+    try {
+        const trainerpost = await trainerCreatePostSchema.find();
+        res.json(trainerpost);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
 
 module.exports = {
     trainerCreatePost, addTrainerPostComments, addLikeToTrainerPost,
     getTrainierPostComments, getTrainierPostComments, getpostTrainerPost,
-    getpostTrainercreatePostById, deleteTrainerPostComment, getTrainerPostBy, hidePost
+    getpostTrainercreatePostById, deleteTrainerPostComment, getTrainerPostBy, hidePost,trainerPostSearchHistory
 }

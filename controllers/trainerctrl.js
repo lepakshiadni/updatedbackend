@@ -572,7 +572,7 @@ const trainerAppliedTraining = async (req, resp) => {
                 const newApplication = new trainerAppliedTrainingSchema({
                     trainerId: _id,
                     trainerProfileImg: req?.user?.basicInfo?.profileImg || "",
-                    trainerName: req?.user?.basicInfo?.firstName || "",
+                    trainerName: req?.user?.basicInfo?.fullName || "",
                     trainerDesignation: req?.user?.basicInfo?.designation || "",
                     // trainerRating: req?.user?.rating?.map((value) => value) || [],
                     trainingDetails: [
@@ -811,6 +811,16 @@ const UpdatePhoneNumber = async (req, resp) => {
 
 }
 
+const trainerSearchHistory = async (req, res) => {
+    try {
+        const trainer = await trainerSchema.find();
+        res.json(trainer);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 
 module.exports = {
     trainerSignUp, gettrainerProfile, trainerBasicInfoUpdate, updateSkillRangeById,
@@ -819,5 +829,5 @@ module.exports = {
     addBookMarkedPost, getBookMarkedPostsByUserId, trainerProfileImageUpdate,
     trainerAppliedTraining, getAppliedTraining, deleteAppliedTraining, addTrainingResources,
     testProfileApi,
-    getAllTrainerDetails, UpdatePhoneNumber
+    getAllTrainerDetails, UpdatePhoneNumber,trainerSearchHistory
 }

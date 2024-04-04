@@ -6,7 +6,8 @@ const {
     trainerAppliedTraining,getAppliedTraining,deleteAppliedTraining,addTrainingResources,
     testProfileApi,
     getAllTrainerDetails,
-    UpdatePhoneNumber
+    UpdatePhoneNumber,
+    trainerSearchHistory
 } = require('../controllers/trainerctrl')
 
 const {updateRequestStatus,getAllRequestTrainer}=require('../controllers/employerTrainingRequestctrl')
@@ -49,7 +50,7 @@ route.get('/getAllRequestTrainer',jwtverify,getAllRequestTrainer);
 route.put('/updateRequestStatus',jwtverify,updateRequestStatus)
 
 route.get("/getEmployerProfileById/:id", getEmployerProfileById);
-
+route.get('/searchData',trainerSearchHistory)
 
 
 
