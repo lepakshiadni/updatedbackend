@@ -1,3 +1,4 @@
+
 # Use the official Node.js 14 image as the base image.
 FROM node:alpine3.18
 
@@ -17,4 +18,4 @@ COPY . .
 EXPOSE 4000
 
 # Run the app when the container launches
-CMD ["npm", "run", "start","--watch"] 
+CMD ["npm", "run", "start"] 
