@@ -310,6 +310,7 @@ const trainerPostSearchHistory = async (req, res) => {
     }
 }
 
+
 module.exports = {
     trainerCreatePost, addTrainerPostComments, addLikeToTrainerPost,
     getTrainierPostComments, getTrainierPostComments, getpostTrainerPost,
