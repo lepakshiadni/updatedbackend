@@ -13,16 +13,16 @@ jobs:
       - name: Login to docker hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}     
       - name: Build Docker Image
-        run: docker build -t lepakshia/updated-nodejs-backend  .
+        run: docker build -t lepakshia/nodejs_backend  .
       - name: Publish Image to docker hub
-        run: docker push lepakshia/updated-nodejs-backend:latest 
+        run: docker push lepakshia/nodejs_backend:latest 
  
   deploy:
     needs: build
     runs-on: self-hosted 
     steps:
       - name: Pull image from docker hub
-        run: sudo docker pull lepakshia/updated-nodejs-backend:latest
+        run: sudo docker pull lepakshia/nodejs_backend:latest
       - name: Delete old container
         run: sudo docker rm -f nodejs_backend-container  
       - name: Set up environment variables
@@ -44,6 +44,6 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan github.com >> ~/.ssh/known_hosts
       - name: Run Docker Container
-        run: sudo docker run -d -p 4000:4000 --restart=always --name nodejs_backend-container --env-file .env lepakshia/updated-nodejs-backend
+        run: sudo docker run -d -p 4000:4000 --restart=always --name nodejs_backend-container --env-file .env lepakshia/nodejs_backend
 
 
